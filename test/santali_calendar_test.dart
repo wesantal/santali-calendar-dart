@@ -1,4 +1,5 @@
 import 'package:santali_calendar/santali_calendar.dart';
+import 'package:santali_calendar/src/constants/weeks.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -58,12 +59,17 @@ void main() {
       print('Start: ${bhador.startDate}');
       print('End: ${bhador.endDate}');
 
-      print('\n------------------\n');
+      print('\n-------- Current Month ----------\n');
 
       // Get month by date
       final month = calendar.getMonthByDate(DateTime.utc(2027, 8, 2));
       print('Month Start: ${month.startDate}');
       print('Month End: ${month.endDate}');
+      for (final weekDay in SantaliWeekDay.values) {
+        for (final day in month.calendar[weekDay]!) {
+          print('${weekDay.name}: ${day?.date}');
+        }
+      }
     });
   });
 }

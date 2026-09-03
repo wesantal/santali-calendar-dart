@@ -1,4 +1,5 @@
 import 'package:santali_calendar/src/constants/months.dart';
+import 'package:santali_calendar/src/constants/weeks.dart';
 import 'package:santali_calendar/src/models/santali_calendar_day.dart';
 import 'package:santali_calendar/src/models/santali_calendar_month.dart';
 import 'package:santali_calendar/src/models/santali_calendar_year.dart';
@@ -21,6 +22,11 @@ class SantaliCalendar {
     return DateTime.utc(date.year, date.month, date.day);
   }
 
+  bool _isSameDate(DateTime first, DateTime second) {
+    return first.year == second.year &&
+        first.month == second.month &&
+        first.day == second.day;
+  }
   // ----------------------------------------------------------
   // TOTAL DAYS IN A SANTALI YEAR
   //
@@ -72,36 +78,120 @@ class SantaliCalendar {
 
   SantaliCalendarMonth buildCalendarMonth(
     SantaliMonth month,
-    SantaliDate today,
-  ) {
+    SantaliDate today, {
+    SantaliMonth? previousMonth,
+    SantaliMonth? nextMonth,
+  }) {
+    final cells = <SantaliCalendarDay?>[];
+
     final firstDay = month.startDate!;
 
-    // Sunday = 0, Monday = 1 ... Saturday = 6
+    // Dart:
+    // Monday = 1 ... Sunday = 7
+    //
+    // Required:
+    // Sunday = 0 ... Saturday = 6
     final startWeekday = firstDay.weekday % 7;
-    final totalCells = startWeekday + month.days;
-    final rows = (totalCells / 7).ceil();
-    final grid = List.generate(
-      rows,
-      (_) => List<SantaliCalendarDay?>.filled(7, null),
-    );
+
+    // ----------------------------------------------------------
+    // PREVIOUS MONTH DAYS
+    // ----------------------------------------------------------
+
+    if (previousMonth != null) {
+      final previousStart = previousMonth.startDate!;
+
+      final firstPreviousDay = previousMonth.days - startWeekday + 1;
+
+      for (var day = firstPreviousDay; day <= previousMonth.days; day++) {
+        final date = previousStart.add(Duration(days: day - 1));
+
+        cells.add(
+          SantaliCalendarDay(
+            day: day,
+            date: date,
+            isCurrentMonth: false,
+            isToday: _isSameDate(today.gregorianDate, date),
+          ),
+        );
+      }
+    } else {
+      for (var i = 0; i < startWeekday; i++) {
+        cells.add(null);
+      }
+    }
+
+    // ----------------------------------------------------------
+    // CURRENT MONTH DAYS
+    // ----------------------------------------------------------
 
     for (var day = 1; day <= month.days; day++) {
-      final index = startWeekday + day - 1;
+      final date = firstDay.add(Duration(days: day - 1));
 
-      final row = index ~/ 7;
-      final column = index % 7;
-
-      final gregorianDate = firstDay.add(Duration(days: day - 1));
-
-      grid[row][column] = SantaliCalendarDay(
-        day: day,
-        date: gregorianDate,
-        isCurrentMonth: true,
-        isToday:
-            today.gregorianDate.year == gregorianDate.year &&
-            today.gregorianDate.month == gregorianDate.month &&
-            today.gregorianDate.day == gregorianDate.day,
+      cells.add(
+        SantaliCalendarDay(
+          day: day,
+          date: date,
+          isCurrentMonth: true,
+          isToday: _isSameDate(today.gregorianDate, date),
+        ),
       );
+    }
+
+    // ----------------------------------------------------------
+    // NEXT MONTH DAYS
+    // ----------------------------------------------------------
+
+    final remainder = cells.length % 7;
+
+    if (remainder != 0 && nextMonth != null) {
+      final requiredDays = 7 - remainder;
+      final nextStart = nextMonth.startDate!;
+
+      for (var day = 1; day <= requiredDays && day <= nextMonth.days; day++) {
+        final date = nextStart.add(Duration(days: day - 1));
+
+        cells.add(
+          SantaliCalendarDay(
+            day: day,
+            date: date,
+            isCurrentMonth: false,
+            isToday: _isSameDate(today.gregorianDate, date),
+          ),
+        );
+      }
+    }
+
+    // Complete last row
+    while (cells.length % 7 != 0) {
+      cells.add(null);
+    }
+
+    // ----------------------------------------------------------
+    // CONVERT CELLS TO WEEKDAY-COLUMN MAP
+    // ----------------------------------------------------------
+
+    final rows = (cells.length / 7).ceil();
+
+    final calendar = <SantaliWeekDay, List<SantaliCalendarDay?>>{
+      SantaliWeekDay.sunday: [],
+      SantaliWeekDay.monday: [],
+      SantaliWeekDay.tuesday: [],
+      SantaliWeekDay.wednesday: [],
+      SantaliWeekDay.thursday: [],
+      SantaliWeekDay.friday: [],
+      SantaliWeekDay.saturday: [],
+    };
+
+    final weekDays = SantaliWeekDay.values;
+
+    for (var row = 0; row < rows; row++) {
+      for (var column = 0; column < 7; column++) {
+        final index = row * 7 + column;
+
+        calendar[weekDays[column]]!.add(
+          index < cells.length ? cells[index] : null,
+        );
+      }
     }
 
     return SantaliCalendarMonth(
@@ -110,12 +200,9 @@ class SantaliCalendar {
       english: month.english,
       startDate: month.startDate,
       endDate: month.endDate,
-      calendar: grid.fold({}, (previousValue, element) {
-        return previousValue;
-      }),
+      calendar: calendar,
     );
   }
-
   // ----------------------------------------------------------
   // BUILD ALL MONTHS FOR A YEAR
   // ----------------------------------------------------------
@@ -144,7 +231,12 @@ class SantaliCalendar {
     final today = getDate(DateTime.now());
     final months = buildMonths(year);
     final calendarMonths = List.generate(months.length, (index) {
-      return buildCalendarMonth(months[index], today);
+      return buildCalendarMonth(
+        months[index],
+        today,
+        previousMonth: months[index > 0 ? index - 1 : months.length - 1],
+        nextMonth: months[index < months.length - 1 ? index + 1 : 0],
+      );
     });
 
     final startDate = yearStart(year);
@@ -172,10 +264,12 @@ class SantaliCalendar {
     if (monthIndex < 0 || monthIndex >= santaliMonths.length) {
       throw RangeError('Invalid Santali month index: $monthIndex');
     }
-
+    final months = buildMonths(year);
     return buildCalendarMonth(
-      buildMonths(year)[monthIndex],
+      months[monthIndex],
       getDate(DateTime.now()),
+      previousMonth: months[monthIndex - 1],
+      nextMonth: months[monthIndex + 1],
     );
   }
 
@@ -190,11 +284,8 @@ class SantaliCalendar {
 
     while (true) {
       final start = yearStart(year);
-
       final end = start.add(Duration(days: yearLength(year) - 1));
-
       final isAfterOrEqualStart = !normalized.isBefore(start);
-
       final isBeforeOrEqualEnd = !normalized.isAfter(end);
 
       // Date belongs to this year

@@ -1,7 +1,7 @@
 name: santali_calendar
 description: A lunisolar calendar for Santali people based on astronomical calculations.
 
-version: 1.0.1
+version: 1.0.2
 license: MIT
 repository: https://github.com/wesantal/santali-calendar-dart
 homepage: https://calendar.wesantal.org

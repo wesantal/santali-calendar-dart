@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Fixed calendar grid rendering issue
+
 ## 1.0.1
 
 - Added `SantaliCalendarMonth` model with calendar grid for UI rendering
