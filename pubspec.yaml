@@ -1,13 +1,13 @@
 name: santali_calendar
-description: A starting point for Dart libraries or applications.
-repository: https://github.com/wesantal/santali-calendar-dart
+description: A lunisolar calendar for Santali people based on astronomical calculations.
 
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/wesantal/santali-calendar-dart
+homepage: https://calendar.wesantal.org
+documentation: https://calendar.wesantal.org/docs
 
 environment:
   sdk: ^3.13.2
-
 
 dev_dependencies:
   lints: ^6.0.0
