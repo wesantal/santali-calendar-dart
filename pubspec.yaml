@@ -1,6 +1,15 @@
 name: santali_calendar
 description: A lunisolar calendar for Santali people based on astronomical calculations.
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 version: 1.0.2
 license: MIT
 repository: https://github.com/wesantal/santali-calendar-dart
@@ -13,3 +22,10 @@ environment:
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.25.6
+
+topics:
+  - santali
+  - calendar
+  - ol-chiki
+  - date
+  - indigenous-calendar
