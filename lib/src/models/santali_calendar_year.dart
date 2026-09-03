@@ -1,15 +1,17 @@
-import 'package:santali_calendar/src/models/santali_month.dart';
+import 'package:santali_calendar/src/models/santali_calendar_month.dart';
 
 class SantaliCalendarYear {
   final int year;
-  final DateTime startDate;
   final DateTime endDate;
-  final List<SantaliMonth> months;
+  final DateTime startDate;
+  final int currentMonthIndex;
+  final List<SantaliCalendarMonth> months;
 
   const SantaliCalendarYear({
     required this.year,
-    required this.startDate,
-    required this.endDate,
     required this.months,
+    required this.endDate,
+    required this.startDate,
+    required this.currentMonthIndex,
   });
 }

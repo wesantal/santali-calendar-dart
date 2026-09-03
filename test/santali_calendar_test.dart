@@ -57,6 +57,13 @@ void main() {
       print('English: ${bhador.english}');
       print('Start: ${bhador.startDate}');
       print('End: ${bhador.endDate}');
+
+      print('\n------------------\n');
+
+      // Get month by date
+      final month = calendar.getMonthByDate(DateTime.utc(2027, 8, 2));
+      print('Month Start: ${month.startDate}');
+      print('Month End: ${month.endDate}');
     });
   });
 }

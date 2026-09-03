@@ -1,4 +1,6 @@
 import 'package:santali_calendar/src/constants/months.dart';
+import 'package:santali_calendar/src/models/santali_calendar_day.dart';
+import 'package:santali_calendar/src/models/santali_calendar_month.dart';
 import 'package:santali_calendar/src/models/santali_calendar_year.dart';
 import 'package:santali_calendar/src/models/santali_date.dart';
 import 'package:santali_calendar/src/models/santali_month.dart';
@@ -68,6 +70,52 @@ class SantaliCalendar {
     return currentDate;
   }
 
+  SantaliCalendarMonth buildCalendarMonth(
+    SantaliMonth month,
+    SantaliDate today,
+  ) {
+    final firstDay = month.startDate!;
+
+    // Sunday = 0, Monday = 1 ... Saturday = 6
+    final startWeekday = firstDay.weekday % 7;
+    final totalCells = startWeekday + month.days;
+    final rows = (totalCells / 7).ceil();
+    final grid = List.generate(
+      rows,
+      (_) => List<SantaliCalendarDay?>.filled(7, null),
+    );
+
+    for (var day = 1; day <= month.days; day++) {
+      final index = startWeekday + day - 1;
+
+      final row = index ~/ 7;
+      final column = index % 7;
+
+      final gregorianDate = firstDay.add(Duration(days: day - 1));
+
+      grid[row][column] = SantaliCalendarDay(
+        day: day,
+        date: gregorianDate,
+        isCurrentMonth: true,
+        isToday:
+            today.gregorianDate.year == gregorianDate.year &&
+            today.gregorianDate.month == gregorianDate.month &&
+            today.gregorianDate.day == gregorianDate.day,
+      );
+    }
+
+    return SantaliCalendarMonth(
+      days: month.days,
+      name: month.name,
+      english: month.english,
+      startDate: month.startDate,
+      endDate: month.endDate,
+      calendar: grid.fold({}, (previousValue, element) {
+        return previousValue;
+      }),
+    );
+  }
+
   // ----------------------------------------------------------
   // BUILD ALL MONTHS FOR A YEAR
   // ----------------------------------------------------------
@@ -83,11 +131,8 @@ class SantaliCalendar {
 
     return definitions.map((month) {
       final monthStart = cursor;
-
       final monthEnd = monthStart.add(Duration(days: month.days - 1));
-
       cursor = monthStart.add(Duration(days: month.days));
-
       return month.copyWith(startDate: monthStart, endDate: monthEnd);
     }).toList();
   }
@@ -95,19 +140,22 @@ class SantaliCalendar {
   // ----------------------------------------------------------
   // GET COMPLETE CALENDAR YEAR
   // ----------------------------------------------------------
-
   SantaliCalendarYear getCalendar(int year) {
-    final startDate = yearStart(year);
-
+    final today = getDate(DateTime.now());
     final months = buildMonths(year);
+    final calendarMonths = List.generate(months.length, (index) {
+      return buildCalendarMonth(months[index], today);
+    });
 
+    final startDate = yearStart(year);
     final endDate = startDate.add(Duration(days: yearLength(year) - 1));
 
     return SantaliCalendarYear(
       year: year,
-      startDate: startDate,
       endDate: endDate,
-      months: months,
+      startDate: startDate,
+      months: calendarMonths,
+      currentMonthIndex: today.monthIndex,
     );
   }
 
@@ -120,12 +168,15 @@ class SantaliCalendar {
   // 11 = Pus
   // ----------------------------------------------------------
 
-  SantaliMonth getMonth(int year, int monthIndex) {
+  SantaliCalendarMonth getMonth(int year, int monthIndex) {
     if (monthIndex < 0 || monthIndex >= santaliMonths.length) {
       throw RangeError('Invalid Santali month index: $monthIndex');
     }
 
-    return buildMonths(year)[monthIndex];
+    return buildCalendarMonth(
+      buildMonths(year)[monthIndex],
+      getDate(DateTime.now()),
+    );
   }
 
   // ----------------------------------------------------------
@@ -183,14 +234,14 @@ class SantaliCalendar {
         final day = date.difference(start).inDays + 1;
 
         return SantaliDate(
-          year: year,
-          monthIndex: index,
-          month: month,
-          monthEnglish: month.english,
           day: day,
+          year: year,
+          month: month,
+          monthEndDate: end,
+          monthIndex: index,
           gregorianDate: date,
           monthStartDate: start,
-          monthEndDate: end,
+          monthEnglish: month.english,
         );
       }
     }
@@ -207,5 +258,15 @@ class SantaliCalendar {
 
   SantaliDate today() {
     return getDate(DateTime.now());
+  }
+
+  SantaliCalendarMonth getMonthByDate(DateTime date) {
+    final santaliDate = getDate(date);
+    final calendar = getCalendar(santaliDate.year);
+    return calendar.months[santaliDate.monthIndex];
+  }
+
+  SantaliCalendarMonth getCurrentMonth() {
+    return getMonthByDate(DateTime.now());
   }
 }

@@ -168,6 +168,21 @@ calendar.yearLength(2027);  // 354 (normal year)
 // Get all months (13 in leap years, 12 otherwise)
 final months = calendar.buildMonths(2026);  // 13 months (includes Sarcha)
 final months = calendar.buildMonths(2027);  // 12 months
+
+// Get full calendar year with grid
+final year = calendar.getCalendar(2026);
+print(year.currentMonthIndex);  // index of today's month
+
+// Get a single month with calendar grid
+final magh = calendar.getMonth(2026, 0);
+print(magh.name);          // "ᱢᱟᱜᱽ"
+print(magh.calendar);      // Map<SantaliWeekDay, List<SantaliCalendarDay?>>
+
+// Get month for any date
+final month = calendar.getMonthByDate(DateTime.utc(2027, 8, 2));
+
+// Get current month
+final current = calendar.getCurrentMonth();
 ```
 
 ### Resulting Leap Years
@@ -203,13 +218,17 @@ final calendar = SantaliCalendar();
 
 // Magh start dates float based on leap year position
 final magh2026 = calendar.getMonth(2026, 0);
-// startDate: 2026-01-19
+// SantaliCalendarMonth: startDate: 2026-01-19
 
 final magh2027 = calendar.getMonth(2027, 0);
-// startDate: 2027-02-07 (pushed later by 2026 leap year)
+// SantaliCalendarMonth: startDate: 2027-02-07 (pushed later by 2026 leap year)
 
 final magh2029 = calendar.getMonth(2029, 0);
-// startDate: 2029-01-28 (another leap year)
+// SantaliCalendarMonth: startDate: 2029-01-28 (another leap year)
+
+// Each month includes a calendar grid for UI rendering
+final grid = magh2026.calendar;
+// Map<SantaliWeekDay, List<SantaliCalendarDay?>>
 ```
 
 ## 9. Base Year & Chandradarshan
