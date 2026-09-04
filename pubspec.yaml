@@ -10,7 +10,7 @@ platforms:
   web:
   windows:
 
-version: 1.0.3
+version: 1.0.4
 license: MIT
 repository: https://github.com/wesantal/santali-calendar-dart
 homepage: https://calendar.wesantal.org

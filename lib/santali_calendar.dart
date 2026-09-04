@@ -28,8 +28,8 @@ class SantaliCalendar {
         first.day == second.day;
   }
 
-  String _getWeekDay(DateTime date) {
-    return weekDays[date.weekday - 1].name;
+  SantaliWeekDay _getWeekDay(DateTime date) {
+    return weekDays[date.weekday - 1];
   }
 
   // ----------------------------------------------------------

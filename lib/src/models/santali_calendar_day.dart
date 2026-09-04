@@ -1,8 +1,10 @@
+import 'package:santali_calendar/src/constants/weeks.dart';
+
 class SantaliCalendarDay {
   final int day;
   final DateTime date;
   final bool isToday;
-  final String weekDay;
+  final SantaliWeekDay weekDay;
   final bool isCurrentMonth;
 
   const SantaliCalendarDay({

@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Added `weekDay as SantaliWeekDay` field to `SantaliCalendarDay` for direct weekday access
+
 ## 1.0.3
 
 - Simplified `SantaliCalendarMonth` to a standalone class (no longer extends `SantaliMonth`)
