@@ -10,7 +10,7 @@ Maps the Santali calendar onto the Gregorian calendar using the 19-year Metonic 
 
 ```yaml
 dependencies:
-  santali_calendar: ^1.0.3
+  santali_calendar: ^1.0.4
 ```
 
 ```bash
@@ -140,7 +140,7 @@ date.olChikiYear;    // "᱒᱐᱒᱖"
 | 6   | San     | ᱥᱟᱱ      | 30   |
 | 7   | Bhador  | ᱵᱷᱟᱫᱚᱨ   | 29   |
 | 8   | Dasain  | ᱫᱟᱥᱟᱸᱭ   | 30   |
-| 9   | Soharay | ᱥᱚᱦᱚᱨᱟᱭ   | 29   |
+| 9   | Soharay | ᱥᱚᱦᱚᱨᱟᱭ  | 29   |
 | 10  | Aghan   | ᱟᱜᱷᱟᱬ    | 30   |
 | 11  | Pus     | ᱯᱩᱥ      | 29   |
 
@@ -167,35 +167,35 @@ final calendar = SantaliCalendar(
 );
 ```
 
-| Method | Return Type | Description |
-| --- | --- | --- |
-| `getCalendar(year)` | `SantaliCalendarYear` | Complete calendar year with grid months |
-| `getMonth(year, monthIndex)` | `SantaliCalendarMonth` | Single month with calendar grid (0-11) |
-| `getMonthByDate(date)` | `SantaliCalendarMonth` | Calendar month for any Gregorian date |
-| `getCurrentMonth()` | `SantaliCalendarMonth` | Current month with calendar grid |
-| `getDate(date)` | `SantaliDate` | Convert a Gregorian date to Santali |
-| `today()` | `SantaliDate` | Today's Santali date |
-| `yearStart(year)` | `DateTime` | Gregorian start date of a Santali year |
-| `yearLength(year)` | `int` | Total days in a Santali year (354 or 384) |
-| `buildMonths(year)` | `List<SantaliMonth>` | Base month objects for a year |
-| `buildCalendarMonth(month, today)` | `SantaliCalendarMonth` | Build calendar grid for a month |
+| Method                             | Return Type            | Description                               |
+| ---------------------------------- | ---------------------- | ----------------------------------------- |
+| `getCalendar(year)`                | `SantaliCalendarYear`  | Complete calendar year with grid months   |
+| `getMonth(year, monthIndex)`       | `SantaliCalendarMonth` | Single month with calendar grid (0-11)    |
+| `getMonthByDate(date)`             | `SantaliCalendarMonth` | Calendar month for any Gregorian date     |
+| `getCurrentMonth()`                | `SantaliCalendarMonth` | Current month with calendar grid          |
+| `getDate(date)`                    | `SantaliDate`          | Convert a Gregorian date to Santali       |
+| `today()`                          | `SantaliDate`          | Today's Santali date                      |
+| `yearStart(year)`                  | `DateTime`             | Gregorian start date of a Santali year    |
+| `yearLength(year)`                 | `int`                  | Total days in a Santali year (354 or 384) |
+| `buildMonths(year)`                | `List<SantaliMonth>`   | Base month objects for a year             |
+| `buildCalendarMonth(month, today)` | `SantaliCalendarMonth` | Build calendar grid for a month           |
 
 ### Utility Functions
 
-| Function | Signature | Description |
-| --- | --- | --- |
-| `isLeapYear(year)` | `bool isLeapYear(int year)` | Check if year has 13 months (Metonic cycle) |
-| `toOlChikiNumeral(n)` | `String toOlChikiNumeral(int number)` | Convert number to Ol Chiki script |
+| Function              | Signature                             | Description                                 |
+| --------------------- | ------------------------------------- | ------------------------------------------- |
+| `isLeapYear(year)`    | `bool isLeapYear(int year)`           | Check if year has 13 months (Metonic cycle) |
+| `toOlChikiNumeral(n)` | `String toOlChikiNumeral(int number)` | Convert number to Ol Chiki script           |
 
 ### Constants
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `santaliMonths` | `List<SantaliMonth>` | 12 base month definitions |
-| `sarchaMonth` | `SantaliMonth` | 13th intercalary month (leap years only) |
-| `santaliWeekDays` | `Map<SantaliWeekDay, String>` | Weekday names in Ol Chiki script |
-| `metonicCycleStart` | `int` | Metonic cycle anchor year (2026) |
-| `metonicLeapPositions` | `Set<int>` | Leap positions within the 19-year cycle |
+| Name                   | Type                          | Description                              |
+| ---------------------- | ----------------------------- | ---------------------------------------- |
+| `santaliMonths`        | `List<SantaliMonth>`          | 12 base month definitions                |
+| `sarchaMonth`          | `SantaliMonth`                | 13th intercalary month (leap years only) |
+| `santaliWeekDays`      | `Map<SantaliWeekDay, String>` | Weekday names in Ol Chiki script         |
+| `metonicCycleStart`    | `int`                         | Metonic cycle anchor year (2026)         |
+| `metonicLeapPositions` | `Set<int>`                    | Leap positions within the 19-year cycle  |
 
 ## Types
 
