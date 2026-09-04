@@ -21,3 +21,13 @@ const santaliWeekDays = {
   SantaliWeekDay.friday: 'ᱡᱟᱹᱨᱩᱢ',
   SantaliWeekDay.saturday: 'ᱧᱩᱦᱩᱢ',
 };
+
+const List<SantaliWeekDay> weekDays = [
+  SantaliWeekDay.sunday,
+  SantaliWeekDay.monday,
+  SantaliWeekDay.tuesday,
+  SantaliWeekDay.wednesday,
+  SantaliWeekDay.thursday,
+  SantaliWeekDay.friday,
+  SantaliWeekDay.saturday,
+];

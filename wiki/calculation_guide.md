@@ -176,7 +176,7 @@ print(year.currentMonthIndex);  // index of today's month
 // Get a single month with calendar grid
 final magh = calendar.getMonth(2026, 0);
 print(magh.name);          // "ᱢᱟᱜᱽ"
-print(magh.calendar);      // Map<SantaliWeekDay, List<SantaliCalendarDay?>>
+print(magh.days);          // List<SantaliCalendarDay?> — flat list of all cells
 
 // Get month for any date
 final month = calendar.getMonthByDate(DateTime.utc(2027, 8, 2));
@@ -227,8 +227,8 @@ final magh2029 = calendar.getMonth(2029, 0);
 // SantaliCalendarMonth: startDate: 2029-01-28 (another leap year)
 
 // Each month includes a calendar grid for UI rendering
-final grid = magh2026.calendar;
-// Map<SantaliWeekDay, List<SantaliCalendarDay?>>
+final grid = magh2026.days;
+// List<SantaliCalendarDay?> — flat list representing the month grid
 ```
 
 ## 9. Base Year & Chandradarshan

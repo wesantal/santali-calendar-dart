@@ -1,16 +1,17 @@
-import 'package:santali_calendar/src/constants/weeks.dart';
 import 'package:santali_calendar/src/models/santali_calendar_day.dart';
-import 'package:santali_calendar/src/models/santali_month.dart';
 
-class SantaliCalendarMonth extends SantaliMonth {
-  final Map<SantaliWeekDay, List<SantaliCalendarDay?>> calendar;
+class SantaliCalendarMonth {
+  final String name;
+  final String english;
+  final DateTime startDate;
+  final DateTime endDate;
+  final List<SantaliCalendarDay?> days;
 
   const SantaliCalendarMonth({
-    required super.days,
-    required super.name,
-    required super.english,
-    required super.startDate,
-    required super.endDate,
-    required this.calendar,
+    required this.days,
+    required this.name,
+    required this.english,
+    required this.endDate,
+    required this.startDate,
   });
 }

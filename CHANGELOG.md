@@ -1,3 +1,16 @@
+## 1.0.3
+
+- Simplified `SantaliCalendarMonth` to a standalone class (no longer extends `SantaliMonth`)
+- Replaced `Map<SantaliWeekDay, List<SantaliCalendarDay?>> calendar` with flat `List<SantaliCalendarDay?> days`
+- Added `weekDay` field to `SantaliCalendarDay` for direct weekday access
+- Added `weekDays` list constant for ordered weekday access
+- Removed empty `build_calendar_month.dart` utility file
+
+### Breaking Changes
+
+- `SantaliCalendarMonth` no longer extends `SantaliMonth` — use `.name`, `.english`, `.startDate`, `.endDate` directly
+- `SantaliCalendarMonth.calendar` map removed — iterate `.days` list instead and use `cell.weekDay` for weekday info
+
 ## 1.0.2
 
 - Fixed calendar grid rendering issue

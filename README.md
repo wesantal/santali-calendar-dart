@@ -10,7 +10,7 @@ Maps the Santali calendar onto the Gregorian calendar using the 19-year Metonic 
 
 ```yaml
 dependencies:
-  santali_calendar: ^1.0.1
+  santali_calendar: ^1.0.3
 ```
 
 ```bash
@@ -38,10 +38,10 @@ print(year.currentMonthIndex); // index of today's month
 // Get a single month with calendar grid
 final magh = calendar.getMonth(2026, 0);
 print(magh.name);          // "ᱢᱟᱜᱽ"
-print(magh.calendar);      // Map<SantaliWeekDay, List<SantaliCalendarDay?>>
+print(magh.days);          // List<SantaliCalendarDay?> — flat list of all cells
 
 // Get month for any date
-final month = calendar.getMonthByDate(DateTime.utc(2027, 8, 2));
+final month = calendar.getMonthByDate(DateTime.now());
 
 // Get current month
 final current = calendar.getCurrentMonth();
@@ -67,15 +67,14 @@ print(year.endDate);           // 2027-01-07 00:00:00.000Z
 print(year.currentMonthIndex); // index of today's month (e.g. 0 for Mag)
 
 for (final month in year.months) {
-  print('${month.name} (${month.english}): ${month.days} days');
+  print('${month.name} (${month.english}): ${month.days.length} cells');
   print('  Start: ${month.startDate}');
   print('  End:   ${month.endDate}');
 
-  // Access the calendar grid by weekday
-  final sundays = month.calendar[SantaliWeekDay.sunday];
-  for (final cell in sundays!) {
-    if (cell != null) {
-      print('  Sun ${cell.day}: ${cell.date} (today: ${cell.isToday})');
+  // Iterate the flat days list
+  for (final cell in month.days) {
+    if (cell != null && cell.isCurrentMonth) {
+      print('  ${cell.weekDay} ${cell.day}: ${cell.date} (today: ${cell.isToday})');
     }
   }
 }
@@ -83,12 +82,15 @@ for (final month in year.months) {
 
 ### SantaliCalendarMonth
 
-Extends `SantaliMonth` with a calendar grid:
+Standalone model for a month's calendar grid:
 
 ```dart
-class SantaliCalendarMonth extends SantaliMonth {
-  final Map<SantaliWeekDay, List<SantaliCalendarDay?>> calendar;
-  // ... inherited: days, name, english, startDate, endDate
+class SantaliCalendarMonth {
+  final String name;                      // Ol Chiki month name
+  final String english;                   // English month name
+  final DateTime startDate;               // Gregorian start date
+  final DateTime endDate;                 // Gregorian end date
+  final List<SantaliCalendarDay?> days;   // Flat list of all cells (7 × rows)
 }
 ```
 
@@ -100,6 +102,7 @@ Each cell in the calendar grid:
 class SantaliCalendarDay {
   final int day;             // day number (1-30)
   final DateTime date;       // Gregorian date
+  final String weekDay;      // weekday name (e.g. "sunday", "monday")
   final bool isToday;        // true if this is today
   final bool isCurrentMonth; // true if in the displayed month
 }
@@ -203,9 +206,9 @@ import 'package:santali_calendar/santali_calendar.dart';
 
 SantaliCalendar       // Main calendar class
 SantaliCalendarYear   // Full year with months list and currentMonthIndex
-SantaliCalendarMonth  // Month with calendar grid (extends SantaliMonth)
-SantaliCalendarDay    // Day cell: day, date, isToday, isCurrentMonth
-SantaliMonth          // Base month: name, english, days, startDate, endDate
+SantaliCalendarMonth  // Month with flat days list (name, english, startDate, endDate, days)
+SantaliCalendarDay    // Day cell: day, date, weekDay, isToday, isCurrentMonth
+SantaliMonth          // Base month definition: name, english, days count, startDate, endDate
 SantaliDate           // Converted date with Ol Chiki getters
 SantaliWeekDay        // Enum: sunday through saturday
 ```

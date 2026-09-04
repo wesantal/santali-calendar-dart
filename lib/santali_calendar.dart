@@ -27,6 +27,11 @@ class SantaliCalendar {
         first.month == second.month &&
         first.day == second.day;
   }
+
+  String _getWeekDay(DateTime date) {
+    return weekDays[date.weekday - 1].name;
+  }
+
   // ----------------------------------------------------------
   // TOTAL DAYS IN A SANTALI YEAR
   //
@@ -110,6 +115,7 @@ class SantaliCalendar {
             day: day,
             date: date,
             isCurrentMonth: false,
+            weekDay: _getWeekDay(date),
             isToday: _isSameDate(today.gregorianDate, date),
           ),
         );
@@ -132,6 +138,7 @@ class SantaliCalendar {
           day: day,
           date: date,
           isCurrentMonth: true,
+          weekDay: _getWeekDay(date),
           isToday: _isSameDate(today.gregorianDate, date),
         ),
       );
@@ -155,6 +162,7 @@ class SantaliCalendar {
             day: day,
             date: date,
             isCurrentMonth: false,
+            weekDay: _getWeekDay(date),
             isToday: _isSameDate(today.gregorianDate, date),
           ),
         );
@@ -166,41 +174,12 @@ class SantaliCalendar {
       cells.add(null);
     }
 
-    // ----------------------------------------------------------
-    // CONVERT CELLS TO WEEKDAY-COLUMN MAP
-    // ----------------------------------------------------------
-
-    final rows = (cells.length / 7).ceil();
-
-    final calendar = <SantaliWeekDay, List<SantaliCalendarDay?>>{
-      SantaliWeekDay.sunday: [],
-      SantaliWeekDay.monday: [],
-      SantaliWeekDay.tuesday: [],
-      SantaliWeekDay.wednesday: [],
-      SantaliWeekDay.thursday: [],
-      SantaliWeekDay.friday: [],
-      SantaliWeekDay.saturday: [],
-    };
-
-    final weekDays = SantaliWeekDay.values;
-
-    for (var row = 0; row < rows; row++) {
-      for (var column = 0; column < 7; column++) {
-        final index = row * 7 + column;
-
-        calendar[weekDays[column]]!.add(
-          index < cells.length ? cells[index] : null,
-        );
-      }
-    }
-
     return SantaliCalendarMonth(
-      days: month.days,
+      days: cells.toList(),
       name: month.name,
       english: month.english,
-      startDate: month.startDate,
-      endDate: month.endDate,
-      calendar: calendar,
+      startDate: month.startDate!,
+      endDate: month.endDate!,
     );
   }
   // ----------------------------------------------------------
