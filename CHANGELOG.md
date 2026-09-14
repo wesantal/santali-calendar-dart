@@ -1,3 +1,9 @@
+## 2.0.2
+
+### Bug Fixes
+
+- Fixed `SantaliCalendarDay.weekDay` labels shifted one day back (`weekDays[date.weekday - 1]` → `weekDays[date.weekday % 7]`, matching the Sunday-first `weekDays` order)
+
 ## 2.0.1
 
 ### Documentation

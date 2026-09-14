@@ -41,7 +41,7 @@ class SantaliCalendar {
   }
 
   SantaliWeekDay _getWeekDay(DateTime date) {
-    return weekDays[date.weekday - 1];
+    return weekDays[date.weekday % 7];
   }
 
   // ----------------------------------------------------------
