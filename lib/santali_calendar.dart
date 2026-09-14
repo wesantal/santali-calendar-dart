@@ -11,14 +11,11 @@ import 'package:santali_calendar/src/models/santali_month.dart';
 import 'package:santali_calendar/src/astronomy/moon.dart';
 
 class SantaliCalendar {
-  final DateTime anchorDate;
-  final int anchorYear;
+  final DateTime anchorDate = DateTime.utc(2026, 1, 19);
   final SantaliMoonCalendar _moonCalendar;
   final Map<int, List<SantaliMonth>> _monthsCache = {};
 
-  SantaliCalendar({DateTime? anchorDate, this.anchorYear = 2026})
-    : anchorDate = anchorDate ?? DateTime.utc(2026, 1, 19),
-      _moonCalendar = SantaliMoonCalendar();
+  SantaliCalendar() : _moonCalendar = SantaliMoonCalendar();
 
   bool _isSameDate(DateTime first, DateTime second) {
     return first.year == second.year &&
