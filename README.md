@@ -12,7 +12,7 @@ Santali days start at 17:00 IST (11:30 UTC). Day numbers use proportional divisi
 
 ```yaml
 dependencies:
-  santali_calendar: ^2.0.1
+  santali_calendar: ^2.0.2
 ```
 
 ```bash
