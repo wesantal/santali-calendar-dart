@@ -1,0 +1,3 @@
+# Demo entry point for local runs (`dart run lib/main.dart`).
+# Not part of the published library API.
+lib/main.dart
