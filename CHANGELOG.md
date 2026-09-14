@@ -1,3 +1,26 @@
+## 2.0.0
+
+### Astronomical Calendar Engine
+
+- `SantaliCalendar` now uses `SantaliMoonCalendar` for accurate moon-phase-based month calculations
+- Month start/end dates are determined by Chandradarshan (first visible crescent) instead of fixed 29/30-day arithmetic
+- Added `isPurnima`, `isAmavasya`, `isLeapMonth` fields to `SantaliDate`
+- Added `weekDay` field to `SantaliDate`
+- Added `fullMoonDate`, `newMoonDate`, `isLeapMonth` fields to `SantaliMonth`
+
+### Model Restructure
+
+- Moved `SantaliMonth`, `SantaliDate`, `SantaliMonthDefinition` to `lib/src/models/`
+- `astronomy/moon.dart` now contains only `SantaliMoonCalendar` and `MonthAstronomy`
+- Removed `lib/src/constants/months.dart` (definitions now in models)
+
+### Breaking Changes
+
+- `SantaliMonth.english` renamed to `SantaliMonth.roman`
+- `SantaliDate.gregorianDate` renamed to `SantaliDate.date`
+- `SantaliDate.monthStartDate` / `SantaliDate.monthEndDate` now required
+- `SantaliCalendarMonth` extends astronomy `SantaliMonth` with all its fields
+
 ## 1.0.4
 
 - Added `weekDay as SantaliWeekDay` field to `SantaliCalendarDay` for direct weekday access

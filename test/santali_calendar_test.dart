@@ -54,7 +54,7 @@ void main() {
 
       print('BHADOR 2026');
       print('Name: ${bhador.name}');
-      print('English: ${bhador.english}');
+      print('English: ${bhador.roman}');
       print('Start: ${bhador.startDate}');
       print('End: ${bhador.endDate}');
 

@@ -1,50 +1,7 @@
 import 'dart:math' as math;
 
-class SantaliMonth {
-  final int index;
-  final String name;
-  final String roman;
-  final DateTime startDate;
-  final DateTime newMoonDate;
-  final DateTime fullMoonDate;
-  final DateTime endDate;
-  final int totalDays;
-  final bool isLeapMonth;
-  final DateTime displayEndDate;
-
-  const SantaliMonth({
-    required this.index,
-    required this.name,
-    required this.roman,
-    required this.startDate,
-    required this.newMoonDate,
-    required this.fullMoonDate,
-    required this.endDate,
-    required this.displayEndDate,
-    required this.totalDays,
-    required this.isLeapMonth,
-  });
-}
-
-class SantaliDate {
-  final int day;
-  final int weekDay;
-  final DateTime date;
-  final bool isPurnima;
-  final bool isAmavasya;
-  final bool isLeapMonth;
-  final SantaliMonth month;
-
-  const SantaliDate({
-    required this.day,
-    required this.date,
-    required this.month,
-    required this.weekDay,
-    required this.isPurnima,
-    required this.isAmavasya,
-    required this.isLeapMonth,
-  });
-}
+import 'package:santali_calendar/src/models/santali_date.dart';
+import 'package:santali_calendar/src/models/santali_month.dart';
 
 class MonthAstronomy {
   final int index;
@@ -65,32 +22,6 @@ class MonthAstronomy {
     required this.fullMoonAstronomical,
   });
 }
-
-/// Default month definitions.
-///
-/// Sarcha Chando is inserted after Pus in leap years.
-class SantaliMonthDefinition {
-  final String name;
-  final String roman;
-
-  const SantaliMonthDefinition(this.name, this.roman);
-}
-
-const List<SantaliMonthDefinition> santaliMonths = [
-  SantaliMonthDefinition('ᱢᱟᱜᱽ', 'Mag'),
-  SantaliMonthDefinition('ᱯᱷᱟᱹᱜᱩᱱ', 'Fagun'),
-  SantaliMonthDefinition('ᱪᱟᱹᱛ', 'Chaat'),
-  SantaliMonthDefinition('ᱵᱟᱹᱭᱥᱟᱹᱠ', 'Baisak'),
-  SantaliMonthDefinition('ᱡᱷᱮᱸᱴ', 'Jhent'),
-  SantaliMonthDefinition('ᱟᱥᱟᱲ', 'Ashal'),
-  SantaliMonthDefinition('ᱥᱟᱱ', 'Saan'),
-  SantaliMonthDefinition('ᱵᱷᱟᱫᱚᱨ', 'Bhador'),
-  SantaliMonthDefinition('ᱫᱟᱥᱟᱸᱭ', 'Dasany'),
-  SantaliMonthDefinition('ᱥᱚᱦᱨᱟᱭ', 'Sohray'),
-  SantaliMonthDefinition('ᱟᱜᱷᱟᱬ', 'Aaghan'),
-  SantaliMonthDefinition('ᱯᱩᱥ', 'Pus'),
-  SantaliMonthDefinition('ᱥᱟᱨᱪᱟ ᱪᱟᱸᱫᱳ', 'Sarcha Chando'),
-];
 
 class SantaliMoonCalendar {
   static const int msPerSecond = 1000;
@@ -621,6 +552,7 @@ class SantaliMoonCalendar {
 
       months.add(
         SantaliMonth(
+          id: definition.id,
           index: index,
           name: definition.name,
           roman: definition.roman,
@@ -904,10 +836,15 @@ class SantaliMoonCalendar {
 
     return SantaliDate(
       day: day,
+      year: target.year,
+      monthIndex: month.index,
       month: month,
       isPurnima: isPurnima,
       date: target,
       weekDay: target.weekday,
+      monthStartDate: month.startDate,
+      monthEndDate: month.endDate,
+      monthEnglish: month.roman,
       isLeapMonth: month.isLeapMonth,
       isAmavasya: isAmavasya,
     );
