@@ -1,4 +1,4 @@
-import 'package:santali_calendar/src/models/santali_calendar_month.dart';
+import 'package:santali_calendar/models/santali_calendar_month.dart';
 
 class SantaliCalendarYear {
   final int year;

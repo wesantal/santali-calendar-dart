@@ -1,5 +1,5 @@
-import 'package:santali_calendar/src/festivals/types.dart';
-import 'package:santali_calendar/src/models/santali_month.dart';
+import 'package:santali_calendar/festivals/types.dart';
+import 'package:santali_calendar/models/santali_month.dart';
 
 const List<SantaliFestivalDefinition> santaliFestivals = [
   SantaliFestivalDefinition(

@@ -1,5 +1,5 @@
-import 'package:santali_calendar/src/models/santali_month.dart';
-import 'package:santali_calendar/src/utils/olchiki_number.dart';
+import 'package:santali_calendar/models/santali_month.dart';
+import 'package:santali_calendar/utils/olchiki_number.dart';
 
 class SantaliDate {
   final int day;

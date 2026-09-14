@@ -1,5 +1,5 @@
-import 'package:santali_calendar/src/models/santali_calendar_day.dart';
-import 'package:santali_calendar/src/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_calendar_day.dart';
+import 'package:santali_calendar/models/santali_month.dart';
 
 class SantaliCalendarMonth extends SantaliMonth {
   final List<SantaliCalendarDay?> days;

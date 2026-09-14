@@ -63,9 +63,13 @@ void main() {
       // Get month by date
       final month = calendar.getMonthByDate(DateTime.now());
       print('Month Start: ${month.startDate}');
-      print('Month End: ${month.endDate}');
+      print('Month End: ${month.displayEndDate}');
       for (final day in month.days) {
+        print('Ol Chiki Day: ${day?.olChikiDay}');
         print('Day: ${day?.day} - Weekday: ${day?.weekDay}');
+        print('Is Today: ${day?.isToday}');
+        print('Date: ${day?.date.toLocal()}');
+        print('\n===========\n');
       }
     });
   });

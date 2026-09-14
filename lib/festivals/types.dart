@@ -1,10 +1,10 @@
-import 'package:santali_calendar/src/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_month.dart';
 
 enum MoonPhase { newMoon, fullMoon }
 
 class FixedGregorianRule {
-  final int month;
   final int day;
+  final int month;
 
   const FixedGregorianRule({required this.month, required this.day});
 }

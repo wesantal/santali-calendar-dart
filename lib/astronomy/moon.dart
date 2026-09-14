@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:santali_calendar/src/models/santali_date.dart';
-import 'package:santali_calendar/src/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_date.dart';
+import 'package:santali_calendar/models/santali_month.dart';
 
 class MonthAstronomy {
   final int index;

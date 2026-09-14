@@ -1,14 +1,15 @@
 import 'dart:math' as math;
 
-import 'package:santali_calendar/src/constants/weeks.dart';
-import 'package:santali_calendar/src/festivals/data.dart';
-import 'package:santali_calendar/src/festivals/types.dart';
-import 'package:santali_calendar/src/models/santali_calendar_day.dart';
-import 'package:santali_calendar/src/models/santali_calendar_month.dart';
-import 'package:santali_calendar/src/models/santali_calendar_year.dart';
-import 'package:santali_calendar/src/models/santali_date.dart';
-import 'package:santali_calendar/src/models/santali_month.dart';
-import 'package:santali_calendar/src/astronomy/moon.dart';
+import 'package:santali_calendar/constants/weeks.dart';
+import 'package:santali_calendar/festivals/data.dart';
+import 'package:santali_calendar/festivals/types.dart';
+import 'package:santali_calendar/models/santali_calendar_day.dart';
+import 'package:santali_calendar/models/santali_calendar_month.dart';
+import 'package:santali_calendar/models/santali_calendar_year.dart';
+import 'package:santali_calendar/models/santali_date.dart';
+import 'package:santali_calendar/models/santali_month.dart';
+import 'package:santali_calendar/astronomy/moon.dart';
+import 'package:santali_calendar/utils/olchiki_number.dart';
 
 /// Traditional Santali lunisolar calendar.
 ///
@@ -108,7 +109,6 @@ class SantaliCalendar {
     SantaliMonth? nextMonth,
   }) {
     final cells = <SantaliCalendarDay?>[];
-
     final firstDay = month.startDate;
 
     // Dart:
@@ -125,7 +125,7 @@ class SantaliCalendar {
     if (previousMonth != null) {
       final previousStart = previousMonth.startDate;
 
-      final firstPreviousDay = previousMonth.totalDays - startWeekday + 1;
+      final firstPreviousDay = previousMonth.totalDays - (startWeekday + 1);
 
       for (var day = firstPreviousDay; day <= previousMonth.totalDays; day++) {
         final date = previousStart.add(Duration(days: day - 1));
@@ -145,6 +145,7 @@ class SantaliCalendar {
             weekDay: _getWeekDay(date),
             isPurnima: isPurnima,
             isAmavasya: isAmavasya,
+            olChikiDay: toOlChikiNumeral(day),
             isToday: _isSameDate(today.date, date),
           ),
         );
@@ -171,6 +172,7 @@ class SantaliCalendar {
           weekDay: _getWeekDay(date),
           isPurnima: isPurnima,
           isAmavasya: isAmavasya,
+          olChikiDay: toOlChikiNumeral(day),
           isToday: _isSameDate(today.date, date),
         ),
       );
@@ -202,6 +204,7 @@ class SantaliCalendar {
             weekDay: _getWeekDay(date),
             isPurnima: isPurnima,
             isAmavasya: isAmavasya,
+            olChikiDay: toOlChikiNumeral(day),
             isToday: _isSameDate(today.date, date),
           ),
         );
@@ -541,7 +544,7 @@ class SantaliCalendar {
 
   /// Returns the renderable calendar month containing [date].
   ///
-  /// Unlike [getMonthFromDate], the month is taken from the full
+  /// Unlike [getMonthByDate], the month is taken from the full
   /// [getCalendar] grid, so its cells carry correct `isToday` flags.
   SantaliCalendarMonth getMonthByDate(DateTime date) {
     final santaliDate = getDate(date);
