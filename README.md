@@ -4,6 +4,8 @@ A Dart package for the traditional Santali lunisolar calendar.
 
 Uses astronomical moon phase calculations (Chandradarshan) to determine accurate month boundaries based on the 19-year Metonic cycle.
 
+Santali days start at 17:00 IST (11:30 UTC). Day numbers use proportional division within the month, matching the reference implementation.
+
 **Repository:** [https://github.com/wesantal/santali-calendar-dart](https://github.com/wesantal/santali-calendar-dart)
 
 ## Installation
@@ -21,15 +23,20 @@ dart pub add santali_calendar
 
 ```dart
 import 'package:santali_calendar/santali_calendar.dart';
+import 'package:santali_calendar/src/utils/olchiki_number.dart';
 
 final calendar = SantaliCalendar();
 
-// Get today's Santali date
+// Get today's Santali date (exact instant)
 final today = calendar.today();
 print(today);            // 3 ᱫᱟᱥᱟᱸᱭ 2026 (Dasany, Gregorian: 2026-09-14)
-print(today.weekDay);    // SantaliWeekDay.monday
+print(today.weekDay);    // 1 (DateTime.weekday: Monday = 1 ... Sunday = 7)
 print(today.isPurnima);  // false
 print(today.isAmavasya); // false
+
+// Santali date for the calendar grid cell of today
+// (evaluates the day starting 17:00 IST on today's Gregorian date)
+final gridToday = calendar.getCalendarToday();
 
 // Convert any Gregorian date
 final date = calendar.getDate(DateTime.utc(2026, 6, 15));
@@ -51,9 +58,18 @@ final month = calendar.getMonthByDate(DateTime.now());
 // Get current month
 final current = calendar.getCurrentMonth();
 
-// Check leap year
-isLeapYear(2026); // true (Metonic position 1)
-isLeapYear(2027); // false
+// Check leap year (method)
+calendar.isLeapYear(2026); // true (Metonic position 1)
+calendar.isLeapYear(2027); // false
+
+// Days in a Santali month
+calendar.getDaysInMonth(2026, 0); // 30
+
+// Festivals for a year
+final festivals = calendar.getFestivals(2026);
+for (final f in festivals) {
+  print('${f.roman}: ${f.date} (${f.type.name})');
+}
 
 // Convert numbers to Ol Chiki script
 toOlChikiNumeral(2026); // "᱒᱐᱒᱖"
@@ -67,7 +83,7 @@ toOlChikiNumeral(2026); // "᱒᱐᱒᱖"
 final year = calendar.getCalendar(2026);
 
 print(year.year);              // 2026
-print(year.startDate);         // start of Magh
+print(year.startDate);         // start of Mag
 print(year.endDate);           // end of Pus
 print(year.currentMonthIndex); // index of today's month
 
@@ -92,41 +108,43 @@ Base month model with astronomical data:
 
 ```dart
 class SantaliMonth {
-  final int index;           // 0-12
-  final String name;         // Ol Chiki name
-  final String roman;        // English name
-  final DateTime startDate;  // Gregorian start (Chandradarshan)
-  final DateTime endDate;    // Gregorian end
-  final DateTime newMoonDate;  // Amavasya date
-  final DateTime fullMoonDate; // Purnima date
-  final int totalDays;       // days in month
-  final bool isLeapMonth;    // true for Sarcha
-  final DateTime displayEndDate;
+  final SantaliMonthId id;       // mag, fagun, ..., sarcha
+  final int index;               // 0-12
+  final String name;             // Ol Chiki name
+  final String roman;            // English name
+  final DateTime startDate;      // Gregorian start (Chandradarshan, 11:30 UTC)
+  final DateTime endDate;        // Gregorian end (next Chandradarshan)
+  final DateTime newMoonDate;    // Amavasya date
+  final DateTime fullMoonDate;   // Purnima (Kunami) date
+  final int totalDays;           // days in month
+  final bool isLeapMonth;        // true for Sarcha
+  final DateTime displayEndDate; // endDate minus one day
 }
 ```
 
 ### SantaliDate
 
-Returned by `getDate()` and `today()`:
+Returned by `getDate()`, `today()` and `getCalendarToday()`:
 
 ```dart
 final date = calendar.today();
 
-date.day;            // 3
-date.year;           // 2026
-date.monthIndex;     // 8 (0-based)
-date.month;          // SantaliMonth instance
-date.monthEnglish;   // "Dasany"
-date.weekDay;        // SantaliWeekDay.monday
-date.date;           // 2026-09-14 00:00:00.000Z
-date.monthStartDate; // 2026-09-11 11:30:00.000Z
-date.monthEndDate;   // 2026-10-11 11:30:00.000Z
-date.isPurnima;      // false
-date.isAmavasya;     // false
-date.isLeapMonth;    // false
-date.olChikiDay;     // "᱓"
-date.olChikiYear;    // "᱒᱐᱒᱖"
+date.day;          // 3
+date.year;         // 2026
+date.monthIndex;   // 8 (0-based)
+date.month;        // SantaliMonth instance
+date.month.roman;  // "Dasany"
+date.month.id;     // SantaliMonthId.dasany
+date.weekDay;      // 1 (DateTime.weekday: Monday = 1 ... Sunday = 7)
+date.date;         // raw UTC timestamp of the queried instant
+date.isPurnima;    // false
+date.isAmavasya;   // false
+date.isLeapMonth;  // false
+date.olChikiDay;   // "᱓"
+date.olChikiYear;  // "᱒᱐᱒᱖"
 ```
+
+Month boundaries are available via `date.month.startDate` / `date.month.endDate`.
 
 ### SantaliCalendarMonth
 
@@ -154,23 +172,42 @@ class SantaliCalendarDay {
 }
 ```
 
+### Festivals
+
+`getFestivals(year)` returns `SantaliFestival` objects resolved from
+`SantaliFestivalDefinition` rules (fixed Gregorian date or moon-relative):
+
+```dart
+class SantaliFestival {
+  final String id;
+  final String name;       // Ol Chiki name
+  final String roman;      // English name
+  final SantaliMonthId monthId;
+  final SantaliFestivalType type; // festival, birthAnniversary,
+                                  // deathAnniversary, cultural,
+                                  // community, observance
+  final DateTime date;
+  final String? description;
+}
+```
+
 ## Santali Months
 
-| #   | Name    | Ol Chiki | Days |
-| --- | ------- | -------- | ---- |
-| 0   | Mag     | ᱢᱟᱜᱽ     | 29-30 |
-| 1   | Phagun  | ᱯᱷᱟᱹᱜᱩᱱ  | 29-30 |
-| 2   | Chat    | ᱪᱟᱹᱛ     | 29-30 |
-| 3   | Baisak  | ᱵᱟᱹᱭᱥᱟᱹᱠ | 29-30 |
-| 4   | Jhent   | ᱡᱷᱮᱸᱴ    | 29-30 |
-| 5   | Ashar   | ᱟᱥᱟᱲ     | 29-30 |
-| 6   | San     | ᱥᱟᱱ      | 29-30 |
-| 7   | Bhador  | ᱵᱷᱟᱫᱚᱨ   | 29-30 |
-| 8   | Dasain  | ᱫᱟᱥᱟᱸᱭ   | 29-30 |
-| 9   | Soharay | ᱥᱚᱦᱚᱨᱟᱭ  | 29-30 |
-| 10  | Aghan   | ᱟᱜᱷᱟᱬ    | 29-30 |
-| 11  | Pus     | ᱯᱩᱥ      | 29-30 |
-| 12  | Sarcha  | ᱥᱚᱨᱪᱟ    | 30 (leap years only) |
+| #   | Id       | Name          | Ol Chiki      | Days               |
+| --- | -------- | ------------- | ------------- | ------------------ |
+| 0   | mag      | Mag           | ᱢᱟᱜᱽ          | 29-30              |
+| 1   | fagun    | Fagun         | ᱯᱷᱟᱹᱜᱩᱱ       | 29-30              |
+| 2   | chaat    | Chaat         | ᱪᱟᱹᱛ          | 29-30              |
+| 3   | baisak   | Baisak        | ᱵᱟᱹᱭᱥᱟᱹᱠ      | 29-30              |
+| 4   | jhent    | Jhent         | ᱡᱷᱮᱸᱴ         | 29-30              |
+| 5   | ashal    | Ashal         | ᱟᱥᱟᱲ          | 29-30              |
+| 6   | saan     | Saan          | ᱥᱟᱱ           | 29-30              |
+| 7   | bhador   | Bhador        | ᱵᱷᱟᱫᱚᱨ        | 29-30              |
+| 8   | dasany   | Dasany        | ᱫᱟᱥᱟᱸᱭ        | 29-30              |
+| 9   | sohray   | Sohray        | ᱥᱚᱦᱨᱟᱭ        | 29-30              |
+| 10  | aghan    | Aaghan        | ᱟᱜᱷᱟᱬ         | 29-30              |
+| 11  | push     | Pus           | ᱯᱩᱥ           | 29-30              |
+| 12  | sarcha   | Sarcha Chando | ᱥᱟᱨᱪᱟ ᱪᱟᱸᱫᱳ | 30 (leap years only) |
 
 Month lengths vary based on astronomical calculations (29-30 days depending on moon phases).
 
@@ -180,25 +217,32 @@ Month lengths vary based on astronomical calculations (29-30 days depending on m
 
 ### SantaliCalendar
 
-| Method                             | Return Type            | Description                               |
-| ---------------------------------- | ---------------------- | ----------------------------------------- |
-| `getCalendar(year)`                | `SantaliCalendarYear`  | Complete calendar year with grid months   |
-| `getMonth(year, monthIndex)`       | `SantaliCalendarMonth` | Single month with calendar grid (0-12)    |
-| `getMonthByDate(date)`             | `SantaliCalendarMonth` | Calendar month for any Gregorian date     |
-| `getCurrentMonth()`                | `SantaliCalendarMonth` | Current month with calendar grid          |
-| `getDate(date)`                    | `SantaliDate`          | Convert a Gregorian date to Santali       |
-| `today()`                          | `SantaliDate`          | Today's Santali date                      |
-| `yearStart(year)`                  | `DateTime`             | Gregorian start date of a Santali year    |
-| `yearLength(year)`                 | `int`                  | Total days in a Santali year (354 or 384) |
-| `buildMonths(year)`                | `List<SantaliMonth>`   | Astronomical month objects for a year     |
-| `buildCalendarMonth(month, today)` | `SantaliCalendarMonth` | Build calendar grid for a month           |
+| Method                             | Return Type            | Description                                              |
+| ---------------------------------- | ---------------------- | -------------------------------------------------------- |
+| `getCalendar(year)`                | `SantaliCalendarYear`  | Complete calendar year with grid months                  |
+| `getMonth(year, monthIndex)`       | `SantaliCalendarMonth` | Single month with calendar grid (0-12)                   |
+| `getMonthByDate(date)`             | `SantaliCalendarMonth` | Calendar month for any Gregorian date                    |
+| `getMonthFromDate(date)`           | `SantaliCalendarMonth` | Calendar month for any Gregorian date                    |
+| `getCurrentMonth()`                | `SantaliCalendarMonth` | Current month with calendar grid                         |
+| `getDate(date)`                    | `SantaliDate`          | Convert a Gregorian date to Santali (exact instant)      |
+| `today()`                          | `SantaliDate`          | Today's Santali date (exact instant)                     |
+| `getCalendarToday()`               | `SantaliDate`          | Santali date of today's calendar-grid cell (17:00 IST)   |
+| `getMonthIndex(date)`              | `int`                  | Santali month index for a Gregorian instant              |
+| `getCalendarMonthIndex(date)`      | `int`                  | Santali month index for a Gregorian calendar cell        |
+| `getDaysInMonth(year, monthIndex)` | `int`                  | Days in a Santali month                                  |
+| `isLeapYear(year)`                 | `bool`                 | Check if year has 13 months (Metonic cycle)              |
+| `getFestivals(year)`               | `List<SantaliFestival>`| Festivals resolved for a year, sorted by date            |
+| `yearStart(year)`                  | `DateTime`             | Gregorian start date of a Santali year                   |
+| `yearLength(year)`                 | `int`                  | Total days in a Santali year (354 or 384)                |
+| `buildMonths(year)`                | `List<SantaliMonth>`   | Astronomical month objects for a year (cached)           |
+| `buildCalendarMonth(month, today)` | `SantaliCalendarMonth` | Build calendar grid for a month                          |
 
 ### Utility Functions
 
 | Function              | Signature                             | Description                                 |
 | --------------------- | ------------------------------------- | ------------------------------------------- |
-| `isLeapYear(year)`    | `bool isLeapYear(int year)`           | Check if year has 13 months (Metonic cycle) |
-| `toOlChikiNumeral(n)` | `String toOlChikiNumeral(int number)` | Convert number to Ol Chiki script           |
+| `isLeapYear(year)`    | `bool isLeapYear(int year)`           | Check if year has 13 months (Metonic cycle). Import from `src/utils/leap_year.dart` |
+| `toOlChikiNumeral(n)` | `String toOlChikiNumeral(int number)` | Convert number to Ol Chiki script. Import from `src/utils/olchiki_number.dart` |
 
 ## Types
 
@@ -207,9 +251,13 @@ SantaliCalendar       // Main calendar class
 SantaliCalendarYear   // Full year with months list and currentMonthIndex
 SantaliCalendarMonth  // Month with days list (extends SantaliMonth)
 SantaliCalendarDay    // Day cell: day, date, weekDay, isToday, isCurrentMonth, isPurnima, isAmavasya
-SantaliMonth          // Astronomical month: name, roman, startDate, endDate, fullMoonDate, newMoonDate
-SantaliDate           // Converted date: day, year, weekDay, isPurnima, isAmavasya, olChiki getters
+SantaliMonth          // Astronomical month: id, name, roman, startDate, endDate, fullMoonDate, newMoonDate
+SantaliMonthId        // Enum: mag, fagun, chaat, baisak, jhent, ashal, saan, bhador, dasany, sohray, aghan, push, sarcha
+SantaliDate           // Converted date: day, year, weekDay (int), isPurnima, isAmavasya, olChiki getters
 SantaliWeekDay        // Enum: sunday through saturday
+SantaliFestival       // Resolved festival: id, name, roman, monthId, type, date
+SantaliFestivalDefinition // Festival rule definition (fixed Gregorian or moon-relative)
+SantaliFestivalType   // Enum: festival, birthAnniversary, deathAnniversary, cultural, community, observance
 SantaliMoonCalendar   // Astronomical calculation engine
 ```
 

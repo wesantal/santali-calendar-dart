@@ -338,10 +338,10 @@ class SantaliCalendar {
       DateTime.now().year,
       DateTime.now().month,
       DateTime.now().day,
-      11,
-      30,
-      0,
-      0,
+      23, // hour
+      59, // minute
+      59, // second
+      999, // millisecond
     );
     return getDate(date);
   }

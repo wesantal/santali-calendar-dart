@@ -4,9 +4,32 @@
 
 - `SantaliCalendar` now uses `SantaliMoonCalendar` for accurate moon-phase-based month calculations
 - Month start/end dates are determined by Chandradarshan (first visible crescent) instead of fixed 29/30-day arithmetic
+- Santali days start at 17:00 IST (11:30 UTC)
+- `getDate()` uses raw timestamps with proportional day division (`floor((targetMs - startMs) / dayDuration) + 1`), matching the reference implementation
 - Added `isPurnima`, `isAmavasya`, `isLeapMonth` fields to `SantaliDate`
-- Added `weekDay` field to `SantaliDate`
+- Added `weekDay` field to `SantaliDate` (int, `DateTime.weekday`: Monday = 1 ... Sunday = 7)
 - Added `fullMoonDate`, `newMoonDate`, `isLeapMonth` fields to `SantaliMonth`
+- Month results are cached per year (`buildMonths`)
+
+### Month Identity
+
+- Added `SantaliMonthId` enum (`mag`, `fagun`, `chaat`, `baisak`, `jhent`, `ashal`, `saan`, `bhador`, `dasany`, `sohray`, `aghan`, `push`, `sarcha`)
+- Added required `id` field to `SantaliMonth`, `SantaliMonthDefinition`, and `SantaliCalendarMonth`
+
+### Festivals
+
+- Added festival system in `lib/src/festivals/` (`types.dart`, `data.dart`, `festivals.dart`)
+- Added `SantaliFestivalRule` (sealed), `FixedGregorianFestivalRule`, `MoonRelativeFestivalRule`, `MoonPhase`, `SantaliFestivalType`, `SantaliFestivalDefinition`, `SantaliFestival`
+- Added `SantaliCalendar.getFestivals(year)` resolving 18 festivals (moon-relative and fixed Gregorian), sorted by date
+
+### New SantaliCalendar Methods
+
+- `getCalendarToday()` — Santali date of today's calendar-grid cell (evaluates the day starting 17:00 IST on today's Gregorian date)
+- `isLeapYear(year)` — Metonic-cycle leap year check
+- `getDaysInMonth(year, monthIndex)` — days in a Santali month
+- `getMonthIndex(date)` — Santali month index for a Gregorian instant
+- `getCalendarMonthIndex(date)` — Santali month index for a Gregorian calendar cell
+- `getMonthFromDate(date)` — calendar month for any Gregorian date
 
 ### Model Restructure
 
@@ -17,8 +40,11 @@
 ### Breaking Changes
 
 - `SantaliMonth.english` renamed to `SantaliMonth.roman`
-- `SantaliDate.gregorianDate` renamed to `SantaliDate.date`
-- `SantaliDate.monthStartDate` / `SantaliDate.monthEndDate` now required
+- `SantaliDate.gregorianDate` renamed to `SantaliDate.date` (now the raw UTC timestamp of the queried instant)
+- `SantaliMonth` now requires `id` (`SantaliMonthId`)
+- `SantaliDate.monthEnglish` / `monthStartDate` / `monthEndDate` removed — use `date.month.roman`, `date.month.startDate`, `date.month.endDate`
+- `SantaliDate.weekDay` is `int` (`DateTime.weekday`), not `SantaliWeekDay`
+- `SantaliCalendar` constructor takes no arguments (`anchorDate` fixed, `anchorYear` removed)
 - `SantaliCalendarMonth` extends astronomy `SantaliMonth` with all its fields
 
 ## 1.0.4
