@@ -836,17 +836,14 @@ class SantaliMoonCalendar {
 
     return SantaliDate(
       day: day,
+      date: target,
       year: target.year,
-      monthIndex: month.index,
       month: month,
       isPurnima: isPurnima,
-      date: target,
-      weekDay: target.weekday,
-      monthStartDate: month.startDate,
-      monthEndDate: month.endDate,
-      monthEnglish: month.roman,
-      isLeapMonth: month.isLeapMonth,
       isAmavasya: isAmavasya,
+      monthIndex: month.index,
+      weekDay: target.weekday,
+      isLeapMonth: month.isLeapMonth,
     );
   }
 

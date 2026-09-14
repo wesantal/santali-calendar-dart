@@ -309,16 +309,13 @@ class SantaliCalendar {
 
         return SantaliDate(
           day: day,
-          year: target.year,
-          monthIndex: index,
           month: month,
           date: target,
-          weekDay: target.weekday,
-          monthStartDate: month.startDate,
-          monthEndDate: month.endDate,
-          monthEnglish: month.roman,
+          year: target.year,
+          monthIndex: index,
           isPurnima: isPurnima,
           isAmavasya: isAmavasya,
+          weekDay: target.weekday,
           isLeapMonth: month.isLeapMonth,
         );
       }
@@ -339,6 +336,18 @@ class SantaliCalendar {
     return getDate(DateTime.now());
   }
 
+  SantaliDate getCalendarToday() {
+    final date = DateTime.utc(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      11,
+      30,
+      0,
+      0,
+    );
+    return getDate(date);
+  }
   // ----------------------------------------------------------
   // LEAP YEAR CHECK
   // ----------------------------------------------------------

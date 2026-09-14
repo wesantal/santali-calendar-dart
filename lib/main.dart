@@ -2,9 +2,11 @@ import 'package:santali_calendar/santali_calendar.dart';
 
 void main() {
   final calendar = SantaliCalendar();
-  final today = calendar.today();
+  final date = calendar.getDate(DateTime.now());
+  final today = calendar.getCalendarToday();
 
-  print("Day: ${today.day}");
+  print("Date: ${date.toString()}");
+  print("Day: ${today.toString()}");
   print("Month: ${today.month.name} (${today.month.roman})");
   print("Year: ${today.year}");
   print("Week Day: ${today.weekDay}");
