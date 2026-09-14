@@ -1,3 +1,10 @@
+## 2.0.1
+
+### Documentation
+
+- Added dartdoc comments to the full `SantaliCalendar` public API
+- Added runnable `example/santali_calendar_example.dart`
+
 ## 2.0.0
 
 ### Astronomical Calendar Engine

@@ -10,11 +10,27 @@ import 'package:santali_calendar/src/models/santali_date.dart';
 import 'package:santali_calendar/src/models/santali_month.dart';
 import 'package:santali_calendar/src/astronomy/moon.dart';
 
+/// Traditional Santali lunisolar calendar.
+///
+/// Month boundaries are determined by Chandradarshan (first visible crescent)
+/// using astronomical moon phase calculations ([SantaliMoonCalendar]) on the
+/// 19-year Metonic cycle, instead of fixed 29/30-day arithmetic.
+///
+/// Santali days start at 17:00 IST (11:30 UTC), and day numbers within a
+/// month use proportional division of the month's actual duration.
+///
+/// ```dart
+/// final calendar = SantaliCalendar();
+/// final today = calendar.today();
+/// print(today); // e.g. 3 ᱫᱟᱥᱟᱸᱭ 2026 (Dasany, Gregorian: 2026-09-14)
+/// ```
 class SantaliCalendar {
+  /// Gregorian anchor date of the Santali epoch (Mag 2026 Chandradarshan).
   final DateTime anchorDate = DateTime.utc(2026, 1, 19);
   final SantaliMoonCalendar _moonCalendar;
   final Map<int, List<SantaliMonth>> _monthsCache = {};
 
+  /// Creates a calendar with its own astronomical calculation engine.
   SantaliCalendar() : _moonCalendar = SantaliMoonCalendar();
 
   bool _isSameDate(DateTime first, DateTime second) {
@@ -31,6 +47,11 @@ class SantaliCalendar {
   // GET MONTHS FOR A YEAR (cached)
   // ----------------------------------------------------------
 
+  /// Returns the astronomical [SantaliMonth] objects for [year].
+  ///
+  /// Results are cached, since month calculation involves full
+  /// astronomical computations per month. Leap years contain 13 months
+  /// (including Sarcha), normal years contain 12.
   List<SantaliMonth> buildMonths(int year) {
     return _monthsCache.putIfAbsent(year, () {
       return _moonCalendar.getSantaliMonths(year);
@@ -41,6 +62,10 @@ class SantaliCalendar {
   // TOTAL DAYS IN A SANTALI YEAR
   // ----------------------------------------------------------
 
+  /// Returns the total number of days in the Santali year [year].
+  ///
+  /// This is 354 for normal years and 384 for leap years (which include
+  /// the 30-day intercalary month Sarcha).
   int yearLength(int year) {
     final months = buildMonths(year);
     int totalDays = 0;
@@ -56,6 +81,10 @@ class SantaliCalendar {
   // Uses the first Chandradarshan (new moon start) of Magh month.
   // ----------------------------------------------------------
 
+  /// Returns the Gregorian start date of the Santali year [year].
+  ///
+  /// This is the Chandradarshan (first visible crescent) of the Magh
+  /// month's new moon, at 11:30 UTC (17:00 IST).
   DateTime yearStart(int year) {
     final magStartMs = _moonCalendar.getMagStartMoon(year);
     final startMs = _moonCalendar.getChandradarshan(magStartMs);
@@ -66,6 +95,12 @@ class SantaliCalendar {
   // BUILD CALENDAR MONTH
   // ----------------------------------------------------------
 
+  /// Builds a renderable calendar grid for [month].
+  ///
+  /// Cells from [previousMonth] and [nextMonth] fill the leading and
+  /// trailing partial weeks so the grid always holds complete rows of 7.
+  /// Pass [today] (usually from [today] or [getCalendarToday]) to mark
+  /// the `isToday` cell.
   SantaliCalendarMonth buildCalendarMonth(
     SantaliMonth month,
     SantaliDate today, {
@@ -198,6 +233,10 @@ class SantaliCalendar {
   // GET COMPLETE CALENDAR YEAR
   // ----------------------------------------------------------
 
+  /// Returns the complete renderable calendar for the Santali year [year].
+  ///
+  /// Includes a [SantaliCalendarMonth] grid for every month and the
+  /// [SantaliCalendarYear.currentMonthIndex] of today.
   SantaliCalendarYear getCalendar(int year) {
     final today = getDate(DateTime.now());
     final months = buildMonths(year);
@@ -232,6 +271,11 @@ class SantaliCalendar {
   // 12 = Sarcha (leap month, only in leap years)
   // ----------------------------------------------------------
 
+  /// Returns a single renderable calendar month.
+  ///
+  /// [monthIndex] is 0-based: 0 = Mag ... 11 = Pus, and 12 = Sarcha
+  /// (only present in leap years). Throws a [RangeError] for
+  /// out-of-range indices.
   SantaliCalendarMonth getMonth(int year, int monthIndex) {
     final months = buildMonths(year);
     if (monthIndex < 0 || monthIndex >= months.length) {
@@ -253,6 +297,16 @@ class SantaliCalendar {
   // algorithm: proportional day division within the month.
   // ----------------------------------------------------------
 
+  /// Converts the Gregorian instant [date] to a [SantaliDate].
+  ///
+  /// The exact timestamp matters: instants before 17:00 IST (11:30 UTC)
+  /// belong to the previous Santali day. Day numbers use proportional
+  /// division of the month's actual duration:
+  ///
+  /// ```dart
+  /// final d = calendar.getDate(DateTime.utc(2026, 9, 14, 9, 0));
+  /// print(d.day); // 3 (14:30 IST is still day 3 of Dasany)
+  /// ```
   SantaliDate getDate(DateTime date) {
     final target = date.toUtc();
     final targetMs = target.millisecondsSinceEpoch;
@@ -329,10 +383,20 @@ class SantaliCalendar {
   // TODAY
   // ----------------------------------------------------------
 
+  /// Returns the [SantaliDate] for the current instant.
+  ///
+  /// See [getDate]: before 17:00 IST the result is still the previous
+  /// Santali day. For highlighting today in a calendar grid, use
+  /// [getCalendarToday] instead.
   SantaliDate today() {
     return getDate(DateTime.now());
   }
 
+  /// Returns the [SantaliDate] of today's calendar-grid cell.
+  ///
+  /// Evaluates the Santali day starting at 17:00 IST on today's
+  /// Gregorian date, so the result always matches the `isToday` cell
+  /// produced by [buildCalendarMonth], even before 17:00 IST.
   SantaliDate getCalendarToday() {
     final date = DateTime.utc(
       DateTime.now().year,
@@ -349,6 +413,10 @@ class SantaliCalendar {
   // LEAP YEAR CHECK
   // ----------------------------------------------------------
 
+  /// Returns whether Santali year [year] is a leap year.
+  ///
+  /// Leap years follow the 19-year Metonic cycle and contain the
+  /// 13th intercalary month Sarcha (384 days instead of 354).
   bool isLeapYear(int year) {
     return _moonCalendar.isSantaliLeapYear(year);
   }
@@ -357,6 +425,9 @@ class SantaliCalendar {
   // DAYS IN MONTH
   // ----------------------------------------------------------
 
+  /// Returns the number of days in the Santali month [monthIndex] of [year].
+  ///
+  /// Throws a [RangeError] for out-of-range indices.
   int getDaysInMonth(int year, int monthIndex) {
     final months = buildMonths(year);
     if (monthIndex < 0 || monthIndex >= months.length) {
@@ -369,6 +440,10 @@ class SantaliCalendar {
   // MONTH INDEX FROM GREGORIAN DATE
   // ----------------------------------------------------------
 
+  /// Returns the Santali month index containing the instant [date].
+  ///
+  /// The raw timestamp is compared against month boundaries
+  /// (Chandradarshan instants at 11:30 UTC).
   int getMonthIndex(DateTime date) {
     return _moonCalendar.getMonthIndex(date);
   }
@@ -377,6 +452,10 @@ class SantaliCalendar {
   // CALENDAR MONTH INDEX FROM GREGORIAN DATE
   // ----------------------------------------------------------
 
+  /// Returns the Santali month index for a Gregorian calendar cell.
+  ///
+  /// A calendar cell for a Gregorian date represents the Santali day
+  /// starting at 17:00 IST on that date.
   int getCalendarMonthIndex(DateTime date) {
     return _moonCalendar.getCalendarMonthIndex(date);
   }
@@ -385,6 +464,7 @@ class SantaliCalendar {
   // GET CALENDAR MONTH FROM GREGORIAN DATE
   // ----------------------------------------------------------
 
+  /// Returns the renderable calendar month containing [date].
   SantaliCalendarMonth getMonthFromDate(DateTime date) {
     final santaliDate = getDate(date);
     return getMonth(santaliDate.year, santaliDate.monthIndex);
@@ -441,6 +521,11 @@ class SantaliCalendar {
     }
   }
 
+  /// Returns all festivals of the Santali year [year], sorted by date.
+  ///
+  /// Festivals resolve from fixed Gregorian rules (e.g. Hul Maha on
+  /// June 30) or moon-relative rules (e.g. Sohray on the full moon of
+  /// Sohray month). Definitions that cannot be resolved are skipped.
   List<SantaliFestival> getFestivals(int year) {
     final festivals = <SantaliFestival>[];
     for (final definition in santaliFestivals) {
@@ -454,12 +539,17 @@ class SantaliCalendar {
     return festivals;
   }
 
+  /// Returns the renderable calendar month containing [date].
+  ///
+  /// Unlike [getMonthFromDate], the month is taken from the full
+  /// [getCalendar] grid, so its cells carry correct `isToday` flags.
   SantaliCalendarMonth getMonthByDate(DateTime date) {
     final santaliDate = getDate(date);
     final calendar = getCalendar(santaliDate.year);
     return calendar.months[santaliDate.monthIndex];
   }
 
+  /// Returns the renderable calendar month containing today.
   SantaliCalendarMonth getCurrentMonth() {
     return getMonthByDate(DateTime.now());
   }
