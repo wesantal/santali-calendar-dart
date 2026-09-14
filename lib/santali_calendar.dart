@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:santali_calendar/src/constants/weeks.dart';
 import 'package:santali_calendar/src/festivals/data.dart';
 import 'package:santali_calendar/src/festivals/types.dart';
@@ -17,39 +19,6 @@ class SantaliCalendar {
   SantaliCalendar({DateTime? anchorDate, this.anchorYear = 2026})
     : anchorDate = anchorDate ?? DateTime.utc(2026, 1, 19),
       _moonCalendar = SantaliMoonCalendar();
-
-  // ----------------------------------------------------------
-  // Normalize any DateTime to the Santali day it belongs to.
-  //
-  // Santali days start at 17:00 IST (11:30 UTC).
-  // A Gregorian date before 11:30 UTC belongs to the
-  // previous Santali day, so we shift it back.
-  // ----------------------------------------------------------
-
-  static const int _santaliStartUtcHour = 11;
-  static const int _santaliStartUtcMinute = 30;
-
-  DateTime _normalize(DateTime date) {
-    final utc = date.toUtc();
-    var year = utc.year;
-    var month = utc.month;
-    var day = utc.day;
-
-    // If before 11:30 UTC, this Gregorian instant belongs to
-    // the previous Santali day → shift the date back one day.
-    if (utc.hour < _santaliStartUtcHour ||
-        (utc.hour == _santaliStartUtcHour &&
-            utc.minute < _santaliStartUtcMinute)) {
-      final prev = DateTime.utc(year, month, day).subtract(
-        const Duration(days: 1),
-      );
-      year = prev.year;
-      month = prev.month;
-      day = prev.day;
-    }
-
-    return DateTime.utc(year, month, day);
-  }
 
   bool _isSameDate(DateTime first, DateTime second) {
     return first.year == second.year &&
@@ -282,66 +251,71 @@ class SantaliCalendar {
 
   // ----------------------------------------------------------
   // GET SANTALI DATE FROM GREGORIAN DATE
+  //
+  // Uses raw timestamps (no normalization) to match the TS
+  // algorithm: proportional day division within the month.
   // ----------------------------------------------------------
 
   SantaliDate getDate(DateTime date) {
-    final normalized = _normalize(date);
+    final target = date.toUtc();
+    final targetMs = target.millisecondsSinceEpoch;
 
-    var year = anchorYear;
+    final gregorianYear = target.year;
 
-    while (true) {
-      final start = yearStart(year);
-      final end = start.add(Duration(days: yearLength(year) - 1));
-      final isAfterOrEqualStart = !normalized.isBefore(start);
-      final isBeforeOrEqualEnd = !normalized.isAfter(end);
+    // Try current Gregorian year first
+    var months = buildMonths(gregorianYear);
+    var result = _findMonthAndDay(target, targetMs, months, gregorianYear);
+    if (result != null) return result;
 
-      // Date belongs to this year
-      if (isAfterOrEqualStart && isBeforeOrEqualEnd) {
-        return _findDateInYear(normalized, year);
-      }
+    // Try previous year
+    months = buildMonths(gregorianYear - 1);
+    result = _findMonthAndDay(target, targetMs, months, gregorianYear - 1);
+    if (result != null) return result;
 
-      // Move backward
-      if (normalized.isBefore(start)) {
-        year--;
-      }
-      // Move forward
-      else {
-        year++;
-      }
-    }
+    // Try next year
+    months = buildMonths(gregorianYear + 1);
+    result = _findMonthAndDay(target, targetMs, months, gregorianYear + 1);
+    if (result != null) return result;
+
+    throw StateError('Unable to determine Santali date for $date');
   }
 
   // ----------------------------------------------------------
-  // FIND MONTH AND DAY INSIDE YEAR
+  // FIND MONTH AND DAY USING RAW TIMESTAMP
+  //
+  // Matches the TS getDate algorithm:
+  //   day = Math.floor((targetMs - startMs) / dayDuration) + 1
   // ----------------------------------------------------------
 
-  SantaliDate _findDateInYear(DateTime date, int year) {
-    final months = buildMonths(year);
-
+  SantaliDate? _findMonthAndDay(
+    DateTime target,
+    int targetMs,
+    List<SantaliMonth> months,
+    int year,
+  ) {
     for (var index = 0; index < months.length; index++) {
       final month = months[index];
+      final startMs = month.startDate.millisecondsSinceEpoch;
+      final endMs = month.endDate.millisecondsSinceEpoch;
 
-      final start = month.startDate;
-      final end = month.endDate;
+      if (targetMs >= startMs && targetMs < endMs) {
+        final totalDays = month.totalDays;
+        final dayDuration = (endMs - startMs) / totalDays;
+        var day = ((targetMs - startMs) / dayDuration).floor() + 1;
+        day = math.max(1, math.min(totalDays, day));
 
-      final isAfterOrEqualStart = !date.isBefore(start);
-      final isBeforeOrEqualEnd = !date.isAfter(end);
-
-      if (isAfterOrEqualStart && isBeforeOrEqualEnd) {
-        final day = date.difference(start).inDays + 1;
-
-        final isPurnima = _isSameGregorianDate(date, month.fullMoonDate);
-        final isAmavasya = _isSameGregorianDate(date, month.newMoonDate);
+        final isPurnima = _isSameGregorianDate(target, month.fullMoonDate);
+        final isAmavasya = _isSameGregorianDate(target, month.newMoonDate);
 
         return SantaliDate(
           day: day,
-          year: year,
+          year: target.year,
           monthIndex: index,
           month: month,
-          date: date,
-          weekDay: date.weekday,
-          monthStartDate: start,
-          monthEndDate: end,
+          date: target,
+          weekDay: target.weekday,
+          monthStartDate: month.startDate,
+          monthEndDate: month.endDate,
           monthEnglish: month.roman,
           isPurnima: isPurnima,
           isAmavasya: isAmavasya,
@@ -349,8 +323,7 @@ class SantaliCalendar {
         );
       }
     }
-
-    throw StateError('Santali date could not be determined for $date.');
+    return null;
   }
 
   bool _isSameGregorianDate(DateTime a, DateTime? b) {
