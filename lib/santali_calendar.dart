@@ -124,8 +124,7 @@ class SantaliCalendar {
 
     if (previousMonth != null) {
       final previousStart = previousMonth.startDate;
-
-      final firstPreviousDay = previousMonth.totalDays - (startWeekday + 1);
+      final firstPreviousDay = (previousMonth.totalDays - startWeekday) + 1;
 
       for (var day = firstPreviousDay; day <= previousMonth.totalDays; day++) {
         final date = previousStart.add(Duration(days: day - 1));

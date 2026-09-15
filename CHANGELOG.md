@@ -1,3 +1,9 @@
+## 2.0.3
+
+### Bug Fixes
+
+- Fixed previous month date issue
+
 ## 2.0.2
 
 ### Bug Fixes
