@@ -61,7 +61,7 @@ void main() {
       print('\n-------- Current Month ----------\n');
 
       // Get month by date
-      final month = calendar.getMonthByDate(DateTime.now());
+      final month = calendar.getCurrentMonth();
       print('Month Start: ${month.startDate}');
       print('Month End: ${month.displayEndDate}');
       for (final day in month.days) {
