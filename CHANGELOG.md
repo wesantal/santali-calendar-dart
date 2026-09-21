@@ -1,3 +1,17 @@
+## 2.0.4
+
+### Features
+
+- Added `isFirstMoonDay` field to `SantaliDate` and `SantaliCalendarDay` (true when day == 1)
+- Added `FixedSantaliFestivalRule` and `FixedSantaliRule` for festivals on fixed days in Santali months
+- Added Veer Birsha Munda Janam Maha festival (November 15, Gregorian)
+
+### Bug Fixes
+
+- Fixed `isAmavasya` detection: now determined by last day of month (`day == month.totalDays`) instead of new moon date matching
+- Fixed Mag Bonga rule: changed from moon-relative to fixed Santali day (day 5 of Mag)
+- Fixed Ol Chiki name typo in Guru Gomke Gur Maha
+
 ## 2.0.3
 
 ### Bug Fixes

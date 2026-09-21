@@ -843,6 +843,7 @@ class SantaliMoonCalendar {
       isAmavasya: isAmavasya,
       monthIndex: month.index,
       weekDay: target.weekday,
+      isFirstMoonDay: day == 1,
       isLeapMonth: month.isLeapMonth,
     );
   }

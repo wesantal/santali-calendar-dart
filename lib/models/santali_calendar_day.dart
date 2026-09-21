@@ -7,6 +7,7 @@ class SantaliCalendarDay {
   final bool isPurnima;
   final bool isAmavasya;
   final String olChikiDay;
+  final bool isFirstMoonDay;
   final bool isCurrentMonth;
   final SantaliWeekDay weekDay;
 
@@ -18,6 +19,7 @@ class SantaliCalendarDay {
     required this.isPurnima,
     required this.isAmavasya,
     required this.olChikiDay,
+    required this.isFirstMoonDay,
     required this.isCurrentMonth,
   });
 }

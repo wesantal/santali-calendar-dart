@@ -132,10 +132,10 @@ class SantaliCalendar {
           date,
           previousMonth.fullMoonDate,
         );
-        final isAmavasya = _isSameGregorianDate(
-          date,
-          previousMonth.newMoonDate,
-        );
+        // final isAmavasya = _isSameGregorianDate(
+        //   date,
+        //   previousMonth.newMoonDate,
+        // );
         cells.add(
           SantaliCalendarDay(
             day: day,
@@ -143,7 +143,8 @@ class SantaliCalendar {
             isCurrentMonth: false,
             weekDay: _getWeekDay(date),
             isPurnima: isPurnima,
-            isAmavasya: isAmavasya,
+            isFirstMoonDay: day == 1,
+            isAmavasya: day == previousMonth.totalDays,
             olChikiDay: toOlChikiNumeral(day),
             isToday: _isSameDate(today.date, date),
           ),
@@ -162,15 +163,16 @@ class SantaliCalendar {
     for (var day = 1; day <= month.totalDays; day++) {
       final date = firstDay.add(Duration(days: day - 1));
       final isPurnima = _isSameGregorianDate(date, month.fullMoonDate);
-      final isAmavasya = _isSameGregorianDate(date, month.newMoonDate);
+      // final isAmavasya = _isSameGregorianDate(date, month.newMoonDate);
       cells.add(
         SantaliCalendarDay(
           day: day,
           date: date,
+          isFirstMoonDay: day == 1,
           isCurrentMonth: true,
           weekDay: _getWeekDay(date),
           isPurnima: isPurnima,
-          isAmavasya: isAmavasya,
+          isAmavasya: day == month.totalDays,
           olChikiDay: toOlChikiNumeral(day),
           isToday: _isSameDate(today.date, date),
         ),
@@ -194,15 +196,16 @@ class SantaliCalendar {
       ) {
         final date = nextStart.add(Duration(days: day - 1));
         final isPurnima = _isSameGregorianDate(date, nextMonth.fullMoonDate);
-        final isAmavasya = _isSameGregorianDate(date, nextMonth.newMoonDate);
+        // final isAmavasya = _isSameGregorianDate(date, nextMonth.newMoonDate);
         cells.add(
           SantaliCalendarDay(
             day: day,
             date: date,
+            isFirstMoonDay: day == 1,
             isCurrentMonth: false,
             weekDay: _getWeekDay(date),
             isPurnima: isPurnima,
-            isAmavasya: isAmavasya,
+            isAmavasya: day == nextMonth.totalDays,
             olChikiDay: toOlChikiNumeral(day),
             isToday: _isSameDate(today.date, date),
           ),
@@ -369,6 +372,7 @@ class SantaliCalendar {
           isPurnima: isPurnima,
           isAmavasya: isAmavasya,
           weekDay: target.weekday,
+          isFirstMoonDay: day == 1,
           isLeapMonth: month.isLeapMonth,
         );
       }
@@ -493,6 +497,22 @@ class SantaliCalendar {
         monthId: month.id,
         type: definition.type,
         date: date,
+        description: definition.description,
+      );
+    } else if (definition.rule is FixedSantaliFestivalRule) {
+      final rule = (definition.rule as FixedSantaliFestivalRule).rule;
+      final month = months.firstWhere(
+        (m) => m.id == rule.monthId,
+        orElse: () => throw StateError('Month ${rule.monthId} not found'),
+      );
+      final date = month.startDate.add(Duration(days: rule.day - 1));
+      return SantaliFestival(
+        id: definition.id,
+        date: date,
+        monthId: month.id,
+        type: definition.type,
+        name: definition.name,
+        roman: definition.roman,
         description: definition.description,
       );
     } else {

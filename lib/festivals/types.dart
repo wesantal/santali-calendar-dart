@@ -2,6 +2,12 @@ import 'package:santali_calendar/models/santali_month.dart';
 
 enum MoonPhase { newMoon, fullMoon }
 
+class FixedSantaliRule {
+  final int day;
+  final SantaliMonthId monthId;
+  const FixedSantaliRule({required this.day, required this.monthId});
+}
+
 class FixedGregorianRule {
   final int day;
   final int month;
@@ -35,6 +41,12 @@ class MoonRelativeFestivalRule extends SantaliFestivalRule {
   final MoonRelativeRule rule;
 
   const MoonRelativeFestivalRule(this.rule);
+}
+
+class FixedSantaliFestivalRule extends SantaliFestivalRule {
+  final FixedSantaliRule rule;
+
+  const FixedSantaliFestivalRule(this.rule);
 }
 
 enum SantaliFestivalType {

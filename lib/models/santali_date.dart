@@ -11,6 +11,7 @@ class SantaliDate {
   final bool isAmavasya;
   final bool isLeapMonth;
   final SantaliMonth month;
+  final bool isFirstMoonDay;
 
   const SantaliDate({
     required this.day,
@@ -22,6 +23,7 @@ class SantaliDate {
     required this.isPurnima,
     required this.isAmavasya,
     required this.isLeapMonth,
+    required this.isFirstMoonDay,
   });
 
   String get olChikiDay => toOlChikiNumeral(day);

@@ -21,19 +21,15 @@ const List<SantaliFestivalDefinition> santaliFestivals = [
     name: 'ᱢᱟᱜᱽ ᱵᱚᱸᱜᱟ',
     roman: 'Mag Bonga',
     type: SantaliFestivalType.festival,
-    rule: MoonRelativeFestivalRule(
-      MoonRelativeRule(
-        phase: MoonPhase.newMoon,
-        offsetDays: 4,
-        monthId: SantaliMonthId.mag,
-      ),
+    rule: FixedSantaliFestivalRule(
+      FixedSantaliRule(day: 5, monthId: SantaliMonthId.mag),
     ),
     description: 'ᱢᱩᱞᱩᱜ ᱕ ᱟᱢᱤ',
   ),
   SantaliFestivalDefinition(
     id: 'pandit-death-anniversary',
-    name: 'ᱜᱩᱨᱩ ᱜᱚᱢᱠᱮ ᱜᱩᱨᱩ ᱢᱟᱸᱦᱟ',
-    roman: 'Guru Gomke Guru Maha',
+    name: 'ᱜᱩᱨᱩ ᱜᱚᱢᱠᱮ ᱜᱩᱨ ᱢᱟᱸᱦᱟ',
+    roman: 'Guru Gomke Gur Maha',
     type: SantaliFestivalType.deathAnniversary,
     rule: MoonRelativeFestivalRule(
       MoonRelativeRule(
@@ -229,5 +225,13 @@ const List<SantaliFestivalDefinition> santaliFestivals = [
     type: SantaliFestivalType.festival,
     rule: FixedGregorianFestivalRule(FixedGregorianRule(month: 8, day: 9)),
     description: 'ᱟᱹᱫᱤᱵᱟᱹᱥᱤ ᱢᱟᱸᱦᱟ',
+  ),
+  SantaliFestivalDefinition(
+    id: 'veer-bisha-munda-jayanti',
+    name: 'ᱵᱤᱨ ᱵᱤᱨᱥᱟᱹ ᱢᱩᱱᱰᱟᱹ ᱡᱟᱱᱟᱢ ᱢᱟᱸᱦᱟ',
+    roman: 'Veer Birsha Munda Janam Maha',
+    type: SantaliFestivalType.festival,
+    rule: FixedGregorianFestivalRule(FixedGregorianRule(month: 11, day: 15)),
+    description: 'ᱵᱤᱨ ᱵᱤᱨᱥᱟᱹ ᱢᱩᱱᱰᱟᱹ ᱡᱟᱱᱟᱢ ᱢᱟᱸᱦᱟ',
   ),
 ];

@@ -41,6 +41,29 @@ void main() {
 
       print('\n------------------\n');
 
+      // Test 2043
+      final calendar2049 = calendar.getCalendar(2049);
+      print("2026 Festivals");
+      for (final festival in calendar.getFestivals(2026)) {
+        print("${festival.name}: ${festival.date.toString()}\n");
+      }
+
+      for (final month in calendar2049.months) {
+        print("<=====${month.name}=====>");
+        print("Start: ${month.startDate.toLocal()}");
+        print("Kunami: ${month.fullMoonDate.toLocal()}");
+        print("Next Amavasya: ${month.endDate.toLocal()}\n");
+        for (final cell in month.days) {
+          if (cell == null) continue;
+          if (cell.isAmavasya || cell.isFirstMoonDay || cell.isPurnima) {
+            print(
+              "${cell.day} ${month.name} ${month.startDate.year} : ${cell.date.toLocal()}",
+            );
+          }
+        }
+      }
+      print('\n------------------\n');
+
       // Test a specific Gregorian date
       final date2043 = calendar.getDate(DateTime.utc(2043, 8, 31));
 

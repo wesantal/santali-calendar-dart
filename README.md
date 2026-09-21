@@ -12,7 +12,7 @@ Santali days start at 17:00 IST (11:30 UTC). Day numbers use proportional divisi
 
 ```yaml
 dependencies:
-  santali_calendar: ^2.0.3
+  santali_calendar: ^2.0.4
 ```
 
 ```bash
@@ -137,9 +137,10 @@ date.month.roman;  // "Dasany"
 date.month.id;     // SantaliMonthId.dasany
 date.weekDay;      // 1 (DateTime.weekday: Monday = 1 ... Sunday = 7)
 date.date;         // raw UTC timestamp of the queried instant
-date.isPurnima;    // false
-date.isAmavasya;   // false
-date.isLeapMonth;  // false
+date.isPurnima;      // false
+date.isAmavasya;     // false
+date.isFirstMoonDay; // true if day 1 of the month
+date.isLeapMonth;    // false
 date.olChikiDay;   // "᱓"
 date.olChikiYear;  // "᱒᱐᱒᱖"
 ```
@@ -169,6 +170,7 @@ class SantaliCalendarDay {
   final bool isCurrentMonth;
   final bool isPurnima;
   final bool isAmavasya;
+  final bool isFirstMoonDay; // true if day 1 of the month
 }
 ```
 
@@ -250,14 +252,16 @@ Month lengths vary based on astronomical calculations (29-30 days depending on m
 SantaliCalendar       // Main calendar class
 SantaliCalendarYear   // Full year with months list and currentMonthIndex
 SantaliCalendarMonth  // Month with days list (extends SantaliMonth)
-SantaliCalendarDay    // Day cell: day, date, weekDay, isToday, isCurrentMonth, isPurnima, isAmavasya
+SantaliCalendarDay    // Day cell: day, date, weekDay, isToday, isCurrentMonth, isPurnima, isAmavasya, isFirstMoonDay
 SantaliMonth          // Astronomical month: id, name, roman, startDate, endDate, fullMoonDate, newMoonDate
 SantaliMonthId        // Enum: mag, fagun, chaat, baisak, jhent, ashal, saan, bhador, dasany, sohray, aghan, push, sarcha
-SantaliDate           // Converted date: day, year, weekDay (int), isPurnima, isAmavasya, olChiki getters
+SantaliDate           // Converted date: day, year, weekDay (int), isPurnima, isAmavasya, isFirstMoonDay, olChiki getters
 SantaliWeekDay        // Enum: sunday through saturday
 SantaliFestival       // Resolved festival: id, name, roman, monthId, type, date
-SantaliFestivalDefinition // Festival rule definition (fixed Gregorian or moon-relative)
+SantaliFestivalDefinition // Festival rule definition (fixed Gregorian, fixed Santali, or moon-relative)
 SantaliFestivalType   // Enum: festival, birthAnniversary, deathAnniversary, cultural, community, observance
+FixedSantaliRule      // Rule for fixed day in a Santali month
+FixedSantaliFestivalRule // SantaliFestivalRule wrapper for FixedSantaliRule
 SantaliMoonCalendar   // Astronomical calculation engine
 ```
 
