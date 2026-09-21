@@ -1,6 +1,18 @@
+/// Santali festival definitions.
+///
+/// Contains the canonical list of all Santali festivals with their
+/// resolution rules (fixed Gregorian, fixed Santali, or moon-relative).
+library;
+
 import 'package:santali_calendar/festivals/types.dart';
 import 'package:santali_calendar/models/santali_month.dart';
 
+/// All Santali festival definitions.
+///
+/// Each entry contains a unique [id], names in Ol Chiki and roman script,
+/// a [SantaliFestivalType], a resolution [SantaliFestivalRule], and an
+/// optional [description]. Use [SantaliCalendar.getFestivals] to resolve
+/// these definitions into concrete dates for a given year.
 const List<SantaliFestivalDefinition> santaliFestivals = [
   SantaliFestivalDefinition(
     id: 'santali-new-year',
