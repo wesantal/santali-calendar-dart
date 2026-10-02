@@ -6,6 +6,7 @@ library;
 
 import 'package:santali_calendar/models/santali_calendar_day.dart';
 import 'package:santali_calendar/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_season.dart';
 
 /// A renderable calendar month with day cells.
 ///
@@ -18,10 +19,12 @@ class SantaliCalendarMonth extends SantaliMonth {
   /// `null` entries represent padding cells before the first day
   /// or after the last day of the month.
   final List<SantaliCalendarDay?> days;
+  final SantaliSeasonDefinition season;
 
   /// Creates a calendar month.
   const SantaliCalendarMonth({
     required this.days,
+    required this.season,
     required super.id,
     required super.name,
     required super.roman,

@@ -1,3 +1,18 @@
+## 2.1.0
+
+### Seasons
+
+- Added `SantaliSeason` enum in `lib/constants/seasons.dart` (`shishira`, `basanta`, `grishma`, `barsha`, `sarata`, `hemanta`)
+- Added `SantaliSeasonDefinition` in `lib/models/santali_season.dart` with `id`, `name` (Ol Chiki), `roman`, `english`, `months` (0-based month indices), `description?`, and `containsMonth()`
+- Added the `santaliSeasons` definitions list (6 entries, year order), plus `getSeasonDefinition(season)`, `seasonOfMonthIndex(monthIndex)`, and the derived `monthSeasons` map
+- Added `getSeason([monthIndex])`, `getSeasons()`, `seasonDefinition(season)`, `getSeasonFromDate(date)`, and `getSeasonMonths(year, season)` to `SantaliCalendar`
+- Added `season` to `SantaliCalendarMonth` and `SantaliDate`, and `seasons` to `SantaliCalendarYear`
+- Documented seasons in the README (names, month coverage, and API)
+
+### Bug Fixes
+
+- Fixed Ol Chiki name typo for Thursday (`ᱥᱟᱹᱨᱤ` → `ᱥᱟᱹᱨᱫᱤ`)
+
 ## 2.0.4
 
 ### Features

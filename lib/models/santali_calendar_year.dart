@@ -5,6 +5,7 @@
 library;
 
 import 'package:santali_calendar/models/santali_calendar_month.dart';
+import 'package:santali_calendar/models/santali_season.dart';
 
 /// A complete Santali calendar year.
 ///
@@ -27,10 +28,14 @@ class SantaliCalendarYear {
   /// Calendar months in this year (12 or 13 in leap years).
   final List<SantaliCalendarMonth> months;
 
+  /// Seasons of this year (year order, starting with Shishira).
+  final List<SantaliSeasonDefinition> seasons;
+
   /// Creates a calendar year.
   const SantaliCalendarYear({
     required this.year,
     required this.months,
+    required this.seasons,
     required this.endDate,
     required this.startDate,
     required this.currentMonthIndex,

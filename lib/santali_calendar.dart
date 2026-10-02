@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:santali_calendar/constants/seasons.dart';
 import 'package:santali_calendar/constants/weeks.dart';
 import 'package:santali_calendar/festivals/data.dart';
 import 'package:santali_calendar/festivals/types.dart';
@@ -8,6 +9,7 @@ import 'package:santali_calendar/models/santali_calendar_month.dart';
 import 'package:santali_calendar/models/santali_calendar_year.dart';
 import 'package:santali_calendar/models/santali_date.dart';
 import 'package:santali_calendar/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_season.dart';
 import 'package:santali_calendar/astronomy/moon.dart';
 import 'package:santali_calendar/utils/olchiki_number.dart';
 
@@ -196,6 +198,7 @@ class SantaliCalendar {
       ) {
         final date = nextStart.add(Duration(days: day - 1));
         final isPurnima = _isSameGregorianDate(date, nextMonth.fullMoonDate);
+
         // final isAmavasya = _isSameGregorianDate(date, nextMonth.newMoonDate);
         cells.add(
           SantaliCalendarDay(
@@ -217,10 +220,13 @@ class SantaliCalendar {
     while (cells.length % 7 != 0) {
       cells.add(null);
     }
-
+    final season = santaliSeasons.firstWhere(
+      (s) => s.months.contains(month.id),
+    );
     return SantaliCalendarMonth(
       days: cells.toList(),
       id: month.id,
+      season: season,
       name: month.name,
       roman: month.roman,
       index: month.index,
@@ -262,6 +268,7 @@ class SantaliCalendar {
       endDate: endDate,
       startDate: startDate,
       months: calendarMonths,
+      seasons: getSeasons(),
       currentMonthIndex: today.monthIndex,
     );
   }
@@ -440,6 +447,55 @@ class SantaliCalendar {
       throw RangeError('Invalid Santali month index: $monthIndex');
     }
     return months[monthIndex].totalDays;
+  }
+
+  // ----------------------------------------------------------
+  // SEASONS
+  // ----------------------------------------------------------
+
+  /// Returns the [SantaliSeason] of the Santali month at [monthIndex].
+  ///
+  /// [monthIndex] is 0-based: 0 = Mag ... 11 = Pus, and 12 = Sarcha
+  /// (leap month, part of [SantaliSeason.hemanta]). When omitted, the
+  /// season of the current month is returned. Throws a [RangeError]
+  /// for out-of-range indices.
+  ///
+  /// ```dart
+  /// calendar.getSeason(0); // SantaliSeason.shishira (Mag)
+  /// calendar.getSeason(8); // SantaliSeason.sarata (Dasany)
+  /// calendar.getSeason(); // season of the current month
+  /// ```
+  SantaliSeasonDefinition getSeason([int? monthIndex = 0]) {
+    final month = getMonth(2026, monthIndex!);
+    return seasonOfMonthId(month.id);
+  }
+
+  /// Returns all six seasons in year order, starting with
+  /// [SantaliSeason.shishira] (the season of Mag).
+  List<SantaliSeasonDefinition> getSeasons() {
+    return santaliSeasons;
+  }
+
+  /// Returns the [SantaliSeasonDefinition] metadata of [season],
+  /// including its Ol Chiki name, Roman and English names,
+  /// description, and covered month indices.
+  SantaliSeasonDefinition seasonDefinition(SantaliSeason season) {
+    return getSeasonDefinition(season);
+  }
+
+  /// Returns the [SantaliSeason] containing the Gregorian instant [date].
+  SantaliSeasonDefinition getSeasonFromDate(DateTime date) {
+    return seasonOfMonthId(getDate(date).month.id);
+  }
+
+  /// Returns the months of [season] in the Santali year [year].
+  ///
+  /// Normal seasons span two months; [SantaliSeason.hemanta] also
+  /// includes Sarcha in leap years.
+  List<SantaliMonth> getSeasonMonths(int year, SantaliSeason season) {
+    return buildMonths(year)
+        .where((month) => seasonOfMonthId(month.id).id == season)
+        .toList(growable: false);
   }
 
   // ----------------------------------------------------------

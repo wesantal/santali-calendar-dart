@@ -7,6 +7,7 @@
 library;
 
 import 'package:santali_calendar/models/santali_month.dart';
+import 'package:santali_calendar/models/santali_season.dart';
 import 'package:santali_calendar/utils/olchiki_number.dart';
 
 /// A Santali date for a specific Gregorian instant.
@@ -64,6 +65,9 @@ class SantaliDate {
 
   /// Ol Chiki numeral of the year.
   String get olChikiYear => toOlChikiNumeral(year);
+
+  /// Season (ṛtu) of this date, derived from its [month].
+  SantaliSeasonDefinition get season => seasonOfMonthId(month.id);
 
   @override
   String toString() {

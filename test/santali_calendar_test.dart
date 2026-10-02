@@ -50,6 +50,7 @@ void main() {
 
       for (final month in calendar2049.months) {
         print("<=====${month.name}=====>");
+        print("Season ${month.season.name}(${month.season.roman})");
         print("Start: ${month.startDate.toLocal()}");
         print("Kunami: ${month.fullMoonDate.toLocal()}");
         print("Next Amavasya: ${month.endDate.toLocal()}\n");
@@ -93,6 +94,16 @@ void main() {
         print('Is Today: ${day?.isToday}');
         print('Date: ${day?.date.toLocal()}');
         print('\n===========\n');
+      }
+
+      // Seasons
+      final seasons = calendar.getSeasons();
+      for (final season in seasons) {
+        print("Season ${season.name}");
+        print("Roman: ${season.roman}");
+        print("English: ${season.english}");
+        print("Description: ${season.description}");
+        print("\n===========\n");
       }
     });
   });

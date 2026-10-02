@@ -1,3 +1,4 @@
+import 'package:santali_calendar/models/santali_season.dart';
 import 'package:santali_calendar/santali_calendar.dart';
 
 void main() {
@@ -21,6 +22,16 @@ void main() {
   // A single month with its calendar grid.
   final dasany = calendar.getMonth(2026, 8);
   print('${dasany.name} (${dasany.roman}): ${dasany.totalDays} days');
+
+  // Seasons (ṛtu) — six per year, two months each.
+  print('Current season: ${calendar.getSeason()}');
+  for (final definition in santaliSeasons) {
+    final months = calendar
+        .getSeasonMonths(2026, definition.id)
+        .map((month) => month.roman)
+        .join(', ');
+    print('$definition -> $months');
+  }
 
   // Festivals of the year, sorted by date.
   for (final festival in calendar.getFestivals(2026)) {
