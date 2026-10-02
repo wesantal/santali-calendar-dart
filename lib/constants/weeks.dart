@@ -20,7 +20,7 @@ enum SantaliWeekDay {
   /// Wednesday (ᱥᱟᱹᱜᱩᱱ).
   wednesday,
 
-  /// Thursday (ᱥᱟᱹᱨᱤ).
+  /// Thursday (ᱥᱟᱹᱨᱫᱤ).
   thursday,
 
   /// Friday (ᱡᱟᱹᱨᱩᱢ).
@@ -36,7 +36,7 @@ const santaliWeekDays = {
   SantaliWeekDay.monday: 'ᱚᱛᱮ',
   SantaliWeekDay.tuesday: 'ᱵᱟᱞᱮ',
   SantaliWeekDay.wednesday: 'ᱥᱟᱹᱜᱩᱱ',
-  SantaliWeekDay.thursday: 'ᱥᱟᱹᱨᱤ',
+  SantaliWeekDay.thursday: 'ᱥᱟᱹᱨᱫᱤ',
   SantaliWeekDay.friday: 'ᱡᱟᱹᱨᱩᱢ',
   SantaliWeekDay.saturday: 'ᱧᱩᱦᱩᱢ',
 };
